@@ -1,9 +1,9 @@
 @extends('layouts/app')
 @section('content')
-@if(isset($assignroute))
-@php $form_action = "routeassign.update" @endphp
+@if(isset($get_service))
+@php $form_action = "service.update" @endphp
 @else
-@php $form_action = "routeassign.create" @endphp
+@php $form_action = "service.create" @endphp
 @endif
     <div class="container-fluid">
         <div id="content" class="app-content">
@@ -11,10 +11,10 @@
                 <div>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
-                        <li class="breadcrumb-item"><a href="javascript:;">Route Assign</a></li>
-                        <li class="breadcrumb-item active"><i class="fa fa-arrow-back"></i> Create Route Assign</li>
+                        <li class="breadcrumb-item"><a href="javascript:;">Service</a></li>
+                        <li class="breadcrumb-item active"><i class="fa fa-arrow-back"></i> Create Service</li>
                     </ol>
-                    <h1 class="page-header mb-0">Route Assign</h1>
+                    <h1 class="page-header mb-0">Service</h1>
                 </div>
             </div>
             <!-- Row for equal division -->
@@ -24,52 +24,39 @@
                         <div class="card-header h6 mb-0 bg-none p-3 d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <i class="fa fa-user-shield fa-lg fa-fw text-dark text-opacity-50 me-1"></i>
-                                Add Route Assign
+                                Add Service
                             </div>
                         </div>
                         <form action="{{ route($form_action) }}" method="POST">
                             @csrf
-                            <input type="hidden" value="{{ (isset($assignroute)) ? $assignroute->id : '' ; }}" name="hidden_id">
+                            <input type="hidden" value="{{ (isset($get_service)) ? $get_service->id : '' ; }}" name="hidden_id">
                             <div class="card-body">
                                 <div class="row">
+
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Select Route </label>
-                                            <select class="form-control custom-select-icon @error('route_id') is-invalid @enderror" name="route_id" @if(!empty($assignroute)) disabled @endif>
-                                                <option value="">Select Route</option>
-                                                @if($allroute)
-                                                    @foreach ($allroute as $routes)
-                                                        <option value="{{ $routes->id }}" @if(empty($assignroute)) {{ old('route_id') == $routes->id ? 'selected' : '' }} @else {{ (isset($assignroute) && $assignroute->route_id == $routes->id) ? 'selected' : '' ; }} @endif>{{ $routes->route }} {{ '('.$routes->title.')' }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                            @error('route_id')
+                                            <label class="form-label">Title</label>
+                                            <input class="form-control @error('title') is-invalid @enderror" type="text" name="title" placeholder="Enter Title" value="@if(empty($get_service)) {{ old('title') }} @else {{ (isset($get_service)) ? $get_service->title : '' ; }} @endif" />
+                                            @error('title')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Select User </label>
-                                            <select class="form-control custom-select-icon @error('user_id') is-invalid @enderror" name="user_id" >
-                                                <option value="">Select User</option>
-                                                @if($alluser)
-                                                    @foreach ($alluser as $user)
-                                                        <option value="{{ $user->id }}" @if(empty($assignroute)) {{ old('user_id') == $user->id ? 'selected' : '' }} @else {{ (isset($assignroute) && $assignroute->user_id == $user->id) ? 'selected' : '' ; }} @endif>{{ $user->name }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                            @error('user_id')
+                                            <label class="form-label">Service Charge</label>
+                                            <input class="form-control @error('service_charge') is-invalid @enderror" type="text" name="service_charge" placeholder="Enter Service Charge" value="@if(empty($get_service)) {{ old('service_charge') }} @else {{ (isset($get_service)) ? $get_service->service_charge : '' ; }} @endif" />
+                                            @error('service_charge')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Route Assign Status</label>
+                                            <label class="form-label">Status</label>
                                             <select class="form-control custom-select-icon @error('status') is-invalid @enderror" name="status">
-                                                <option value="1" {{ old('status') == 1 ? 'selected' : '' }} {{ (isset($assignroute) && $assignroute->status == 1) ? 'selected' : '' ; }}>Active Route Assign</option>
-                                                <option value="2" {{ old('status') == 2 ? 'selected' : '' }} {{ (isset($assignroute) && $assignroute->status == 2) ? 'selected' : '' ; }}>Inactive Route Assign</option>
+                                                <option value="1" {{ old('status') == 1 ? 'selected' : '' }} {{ (isset($get_service) && $get_service->status == 1) ? 'selected' : '' ; }}>Active </option>
+                                                <option value="2" {{ old('status') == 2 ? 'selected' : '' }} {{ (isset($get_service) && $get_service->status == 2) ? 'selected' : '' ; }}>Inactive </option>
                                             </select>
                                             @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -90,42 +77,42 @@
                     <div class="card border-0 mb-4">
                         <div class="card-header h6 mb-0 bg-none p-3 d-flex align-items-center" style="border-bottom: 1px solid #2196f3;">
                             <i class="fab fa-buromobelexperte fa-lg fa-fw text-dark text-opacity-50 me-1"></i>
-                            Route Assign List
+                            Service List
                         </div>
                         <div class="card-body">
                             <table id="data-table-default" class="table table-striped table-bordered align-middle">
                                 <thead>
                                     <tr>
                                         <th width="1%"></th>
-                                        <th class="text-nowrap">Route</th>
-                                        <th class="text-nowrap">Route Name</th>
-                                        <th class="text-nowrap">User Name</th>
-                                        <th class="text-nowrap">Assign Date</th>
+                                        <th class="text-nowrap">Title</th>
+                                        <th class="text-nowrap">Charge</th>
+                                        <th class="text-nowrap">Created Date</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-nowrap">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if($allrouteassign)
-                                    @foreach ($allrouteassign as $assign)
+                                    @if($allservice)
+                                    @foreach ($allservice as $service)
                                     <tr class="odd gradeX">
                                         <td width="1%" class="fw-bold text-dark">{{ $loop->iteration }}</td>
-                                        <td>{{ $assign->route }}</td>
-                                        <td>{{ $assign->title }}</td>
-                                        <td>{{ $assign->name }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($assign->created_at)->format('d F Y h:i A') }}</td>
+                                        <td>{{ $service->title }}</td>
+                                        <td>{{ $service->service_charge }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($service->created_at)->format('d F Y h:i A') }}</td>
                                         <td>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{ $assign->id }}" {{ ($assign->status==1) ? 'checked' : '' }}  onchange="ChangeStatus('assignroutes',{{ $assign->id }});" >
+                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault{{ $service->id }}" {{ ($service->status==1) ? 'checked' : '' }}  onchange="ChangeStatus('services',{{ $service->id }});" >
                                               </div>
                                         </td>
-                                        <td class="text-center">
-
-                                            <form action="{{ route('routeassign.remove', $assign->id) }}" method="GET" style="display: inline;">
+                                        <td>
+                                            <a href="{{ route('service.edit', $service->id) }}" class="text-primary me-2">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('service.destroy', $service->id) }}" method="POST" style="display: inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Are you sure you want to delete this Route Assign?');">
-                                                    <i class="fa fa-remove"></i>
+                                                <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Are you sure you want to delete this service?');">
+                                                    <i class="fa fa-trash"></i>
                                                 </button>
                                             </form>
                                         </td>
@@ -140,4 +127,5 @@
             </div>
         </div>
     </div>
+
 @endsection

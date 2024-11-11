@@ -1,18 +1,17 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\LeadController;
-use App\Http\Controllers\RouteController;
-use App\Http\Controllers\ZipController;
-use App\Http\Controllers\AssignrouteController;
+use App\Http\Controllers\PetCategoryController;
 use App\Http\Controllers\NotesController;
-use App\Http\Controllers\ProvidersController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentModeController;
 use App\Http\Controllers\BankController;
-use App\Http\Controllers\CmsController;
 use App\Http\Controllers\CompanyController;
 
 Route::get('/', function () {
@@ -22,7 +21,7 @@ Route::get('/', function () {
 Auth::routes();
 
 // Grouping all routes with auth middleware
-Route::middleware(['auth','checkRole'])->group(function () {
+Route::middleware(['auth', 'checkRole'])->group(function () {
     // Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -44,6 +43,9 @@ Route::middleware(['auth','checkRole'])->group(function () {
     Route::get('/member/view/{id}', [MemberController::class, 'view'])->name('member.view');
     Route::post('/member/update', [MemberController::class, 'update'])->name('member.update');
     Route::delete('/member/delete/{id}', [MemberController::class, 'destroy'])->name('member.destroy');
+    Route::get('/member/kyc', [MemberController::class, 'member_kyc'])->name('member.kyc');
+    Route::get('/view/member/kyc/{id}', [MemberController::class, 'view_member_kyc'])->name('view.member.kyc');
+    Route::put('/update/kyc/{id}', [MemberController::class, 'update_kyc_status'])->name('update.kyc.status');
 
     // Permission Route
     Route::get('/permission/{id}', [RoleController::class, 'permission'])->name('permission');
@@ -66,21 +68,13 @@ Route::middleware(['auth','checkRole'])->group(function () {
     Route::post('/kyc-process', [LeadController::class, 'kyc_process'])->name('kyc.process');
 
     // Route
-    Route::get('/route', [RouteController::class, 'index'])->name('route');
-    Route::match(['get', 'post'], '/route/create', [RouteController::class, 'create'])->name('route.create');
-    Route::get('/route/{id}', [RouteController::class, 'edit'])->name('route.edit');
-    Route::post('/route/update', [RouteController::class, 'update'])->name('route.update');
-    Route::delete('/route/delete/{id}', [RouteController::class, 'destroy'])->name('route.destroy');
+    Route::get('/pet-category', [PetCategoryController::class, 'index'])->name('pet.category');
+    Route::match(['get', 'post'], '/route/create', [PetCategoryController::class, 'create'])->name('category.create');
+    Route::get('/pet-category/{id}', [PetCategoryController::class, 'edit'])->name('category.edit');
+    Route::post('/pet-category/update', [PetCategoryController::class, 'update'])->name('category.update');
+    Route::delete('/category/delete/{id}', [PetCategoryController::class, 'destroy'])->name('category.destroy');
 
 
-    // Assign Route
-    Route::get('/routeassign', [AssignrouteController::class, 'index'])->name('routeassign');
-    Route::match(['get', 'post'], '/routeassign/create', [AssignrouteController::class, 'create'])->name('routeassign.create');
-    Route::get('/routeassign/{id}', [AssignrouteController::class, 'edit'])->name('routeassign.edit');
-    Route::post('/routeassign/update', [AssignrouteController::class, 'update'])->name('routeassign.update');
-    Route::delete('/routeassign/delete/{id}', [AssignrouteController::class, 'destroy'])->name('routeassign.destroy');
-    Route::get('/routeassign-view/{id}', [AssignrouteController::class, 'view'])->name('routeassign.view');
-    Route::get('/routeassign-remove/{id}', [AssignrouteController::class, 'remove_route'])->name('routeassign.remove');
 
     // Notes Route
     Route::post('/note/save-notes', [NotesController::class, 'create'])->name('notes.create');
@@ -88,27 +82,33 @@ Route::middleware(['auth','checkRole'])->group(function () {
     Route::post('/note/notes-delete', [NotesController::class, 'delete_notes'])->name('notes.delete');
     Route::post('/note/notes-disscuss', [NotesController::class, 'notes_disscuss'])->name('notes.disscuss');
 
-       // Providers
-       Route::get('/providers', [ProvidersController::class, 'index'])->name('providers');
-       Route::match(['get', 'post'], '/providers/create', [ProvidersController::class, 'create'])->name('providers.create');
-       Route::get('/providers/{id}', [ProvidersController::class, 'edit'])->name('providers.edit');
-       Route::post('/providers/update', [ProvidersController::class, 'update'])->name('providers.update');
-       Route::delete('/providers/delete/{id}', [ProvidersController::class, 'destroy'])->name('providers.destroy');
-// Payment Mode
-        Route::get('/payment-mode', [PaymentModeController::class, 'index'])->name('payment_mode');
-        Route::match(['get', 'post'], '/payment-mode/create', [PaymentModeController::class, 'create'])->name('payment_mode.create');
-        Route::get('/payment-mode/{id}', [PaymentModeController::class, 'edit'])->name('payment_mode.edit');
-        Route::post('/payment-mode/update', [PaymentModeController::class, 'update'])->name('payment_mode.update');
-        Route::delete('/payment-mode/delete/{id}', [PaymentModeController::class, 'destroy'])->name('payment_mode.destroy');
-        // Bank Detail
-        Route::get('/bank', [BankController::class, 'index'])->name('bank');
-        Route::match(['get', 'post'], '/bank/create', [BankController::class, 'create'])->name('bank.create');
-        Route::get('/bank/{id}', [BankController::class, 'edit'])->name('bank.edit');
-        Route::post('/bank/update', [BankController::class, 'update'])->name('bank.update');
-        Route::delete('/bank/delete/{id}', [BankController::class, 'destroy'])->name('bank.destroy');
-        // cms route
-        Route::get('company/{id}/edit', [CompanyController::class, 'edit'])->name('company.edit');
-        Route::post('company/{id}', [CompanyController::class, 'update'])->name('company.update');
+    // Providers
+    Route::get('/service', [ServiceController::class, 'index'])->name('service');
+    Route::match(['get', 'post'], '/service/create', [ServiceController::class, 'create'])->name('service.create');
+    Route::get('/service/{id}', [ServiceController::class, 'edit'])->name('service.edit');
+    Route::post('/service/update', [ServiceController::class, 'update'])->name('service.update');
+    Route::delete('/service/delete/{id}', [ServiceController::class, 'destroy'])->name('service.destroy');
 
+    // Providers
+    Route::get('/package', [PackageController::class, 'index'])->name('package');
+    Route::match(['get', 'post'], '/package/create', [PackageController::class, 'create'])->name('package.create');
+    Route::get('/package/{id}', [PackageController::class, 'edit'])->name('package.edit');
+    Route::post('/package/update', [PackageController::class, 'update'])->name('package.update');
+    Route::delete('/package/delete/{id}', [PackageController::class, 'destroy'])->name('package.destroy');
 
+    // Payment Mode
+    Route::get('/payment-mode', [PaymentModeController::class, 'index'])->name('payment_mode');
+    Route::match(['get', 'post'], '/payment-mode/create', [PaymentModeController::class, 'create'])->name('payment_mode.create');
+    Route::get('/payment-mode/{id}', [PaymentModeController::class, 'edit'])->name('payment_mode.edit');
+    Route::post('/payment-mode/update', [PaymentModeController::class, 'update'])->name('payment_mode.update');
+    Route::delete('/payment-mode/delete/{id}', [PaymentModeController::class, 'destroy'])->name('payment_mode.destroy');
+    // Bank Detail
+    Route::get('/bank', [BankController::class, 'index'])->name('bank');
+    Route::match(['get', 'post'], '/bank/create', [BankController::class, 'create'])->name('bank.create');
+    Route::get('/bank/{id}', [BankController::class, 'edit'])->name('bank.edit');
+    Route::post('/bank/update', [BankController::class, 'update'])->name('bank.update');
+    Route::delete('/bank/delete/{id}', [BankController::class, 'destroy'])->name('bank.destroy');
+    // cms route
+    Route::get('company/{id}/edit', [CompanyController::class, 'edit'])->name('company.edit');
+    Route::post('company/{id}', [CompanyController::class, 'update'])->name('company.update');
 });

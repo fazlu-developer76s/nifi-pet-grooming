@@ -17,25 +17,36 @@ class MemberController extends Controller
     {
 
         $title = "Member List";
-        // $allmember = Member::where('status','!=',3)->where('role_id','!=',1)->orderBy('id','desc')->get();
-        $allmember = DB::table('users')->leftJoin('roles', 'roles.id', '=', 'users.role_id')->where('users.role_id','!=',1)->select('users.*', 'roles.title')->get();
+        $allmember = DB::table('users')->leftJoin('roles', 'roles.id', '=', 'users.role_id')->where('users.role_id',2)->where('users.status','!=',3)->select('users.*', 'roles.title')->get();
         return view('member.index', compact('title', 'allmember'));
     }
-    public function borrower()
-    {
 
-        $title = "Member List";
-        $user_id = Auth::user()->id;
-        // $get_otp_status = DB::table('tbl_otp')->where('user_id',$user_id)->where('module_type',3)->orderBy('id','desc')->limit(1)->get()[0];
-        $get_otp_status = DB::table('tbl_otp')
-            ->where('user_id', $user_id)
-            ->where('module_type', 3)
-            ->orderBy('id', 'desc')
-            ->limit(1)
-            ->first();
-        $allmember = DB::table('users')->leftJoin('roles', 'roles.id', '=', 'users.role_id')->select('users.*', 'roles.title')->where('users.role_id', 4)->get();
-        return view('member.index', compact('title', 'allmember', 'get_otp_status'));
+    public function member_kyc(){
+        $title = "KYC Member";
+        $allkyc = DB::table('kyc_processes')
+        ->join('users', 'kyc_processes.user_id', '=', 'users.id')
+        ->join('roles', 'roles.id', '=', 'users.role_id')
+        ->where('users.status',1)
+        ->where('roles.status',1)
+        ->select('users.name as user_name','users.email as email','users.mobile_no as mobile_no','users.aadhar_no as aadhar_no','roles.title as role_title','kyc_processes.*')
+        ->get();
+        return view('member.kyc_member', compact('title', 'allkyc'));
     }
+
+    public function view_member_kyc($id){
+
+        $title = "KYC Member";
+        $member = DB::table('kyc_processes')
+        ->join('users', 'kyc_processes.user_id', '=', 'users.id')
+        ->join('roles', 'roles.id', '=', 'users.role_id')
+        ->where('users.status',1)
+        ->where('roles.status',1)
+        ->where('kyc_processes.id',$id)
+        ->select('users.name as user_name','users.email as email','users.mobile_no as mobile_no','users.aadhar_no as aadhar_no','roles.title as role_title','kyc_processes.*')
+        ->first();
+        return view('member.view_kyc_member', compact('title', 'member'));
+    }
+
     public function create(Request $request)
     {
 
@@ -92,18 +103,16 @@ class MemberController extends Controller
         }
 
         $title = "Add Member";
-        $get_role = Roles::where('status', 1)->where('id', '!=', 1)->get();
-        $allroute = Route::where('status', '!=', '3')->orderBy('id', 'desc')->get();
-        return view('member.create', compact('title', 'get_role', 'allroute'));
+        $get_role = Roles::where('status', 1)->where('id', 2)->get();
+        return view('member.create', compact('title', 'get_role'));
     }
 
     public function edit($id)
     {
         $title = "Edit Member";
-        $allroute = Route::where('status', '!=', '3')->orderBy('id', 'desc')->get();
         $get_member = Member::where('status', '!=', 3)->where('role_id', '!=', 1)->where('id', $id)->first();
-        $get_role = Roles::where('status', 1)->where('id', '!=', 1)->get();
-        return view('member.create', compact('title', 'get_member', 'get_role', 'allroute'));
+        $get_role = Roles::where('status', 1)->where('id', 2)->get();
+        return view('member.create', compact('title', 'get_member', 'get_role',));
     }
 
     public function view($id)
@@ -190,11 +199,8 @@ class MemberController extends Controller
         $query = Member::where('status', '!=', 3);
 
         if ($id !== null) {
-            // Exclude the current member from the check
             $query->where('id', '!=', $id);
         }
-
-        // Check for existing email, mobile number, or Aadhar number
         $check_member = $query->where(function ($q) use ($request) {
             $q->where('email', $request->email)
                 ->orWhere('mobile_no', $request->mobile_no)
@@ -228,4 +234,17 @@ class MemberController extends Controller
             return response()->json(false);
         }
     }
+
+    public function update_kyc_status($id){
+
+        $update_kyc_status = DB::table('kyc_processes')->where('id', $id)->update(['kyc_status' => $_POST['kyc_status']]);
+        if ($update_kyc_status) {
+            return redirect()->route('view.member.kyc',$id)->with('success', 'Kyc Status Update successfully.');
+        } else {
+            return redirect()->route('view.member.kyc',$id)->with('success', 'Error.');
+
+        }
+    }
+
+
 }
