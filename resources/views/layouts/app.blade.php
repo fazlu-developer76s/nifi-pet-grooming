@@ -30,6 +30,10 @@
         .bootstrap-tagsinput input {
             margin-bottom: 0.5em;
         }
+        .app-sidebar{
+            background: #24244c !important;
+            color: black !important;
+        }
     </style>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
     <!-- CSRF Token -->

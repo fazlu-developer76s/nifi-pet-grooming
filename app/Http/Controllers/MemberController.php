@@ -18,7 +18,7 @@ class MemberController extends Controller
 
         $title = "Member List";
         // $allmember = Member::where('status','!=',3)->where('role_id','!=',1)->orderBy('id','desc')->get();
-        $allmember = DB::table('users')->leftJoin('roles', 'roles.id', '=', 'users.role_id')->select('users.*', 'roles.title')->where('users.role_id', '!=', 4)->get();
+        $allmember = DB::table('users')->leftJoin('roles', 'roles.id', '=', 'users.role_id')->where('users.role_id','!=',1)->select('users.*', 'roles.title')->get();
         return view('member.index', compact('title', 'allmember'));
     }
     public function borrower()
