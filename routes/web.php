@@ -13,6 +13,7 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentModeController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ReferController;
 
 Route::get('/', function () {
     return view('home');
@@ -88,6 +89,7 @@ Route::middleware(['auth', 'checkRole'])->group(function () {
     Route::get('/service/{id}', [ServiceController::class, 'edit'])->name('service.edit');
     Route::post('/service/update', [ServiceController::class, 'update'])->name('service.update');
     Route::delete('/service/delete/{id}', [ServiceController::class, 'destroy'])->name('service.destroy');
+    Route::put('/addservice-package', [ServiceController::class, 'addservice_package'])->name('addservice.package');
 
     // Providers
     Route::get('/package', [PackageController::class, 'index'])->name('package');
@@ -95,6 +97,11 @@ Route::middleware(['auth', 'checkRole'])->group(function () {
     Route::get('/package/{id}', [PackageController::class, 'edit'])->name('package.edit');
     Route::post('/package/update', [PackageController::class, 'update'])->name('package.update');
     Route::delete('/package/delete/{id}', [PackageController::class, 'destroy'])->name('package.destroy');
+
+    // Refer And Earn Setup Route
+    Route::get('/refer', [ReferController::class, 'index'])->name('refer');
+    Route::match(['get', 'post'], '/refer/create', [ReferController::class, 'create'])->name('refer.create');
+    Route::match(['get', 'post'], '/earn-setup', [ReferController::class, 'refer_earn'])->name('refer.earn');
 
     // Payment Mode
     Route::get('/payment-mode', [PaymentModeController::class, 'index'])->name('payment_mode');

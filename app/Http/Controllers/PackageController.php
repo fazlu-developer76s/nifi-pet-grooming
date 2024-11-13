@@ -13,11 +13,7 @@ class PackageController extends Controller
     {
         $title = "Package List";
         $service = Service::where('status',1)->get();
-        $allpackage = DB::table('packages')->
-        join('services','services.id','=','packages.service_id')
-        ->select('packages.*','services.title as service_title')
-        ->where('packages.status','!=',3)->where('services.status',1)
-        ->orderBy('packages.id','desc')->get();
+        $allpackage = Package::where('status','!=',3)->get();
         return view('package.index', compact('title', 'allpackage','service'));
     }
 
@@ -25,9 +21,10 @@ class PackageController extends Controller
     {
         if ($request->method() == 'POST') {
             $request->validate([
-                'service_id' => 'required',
                 'title' => 'required',
-                'package_charge' => 'required|integer',
+                'small_charge' => 'required|integer',
+                'large_charge' => 'required|integer',
+                'gaint_charge' => 'required|integer',
                 'status' => 'required',
             ]);
             $check_data = $this->check_exist_data($request, null);
@@ -43,9 +40,10 @@ class PackageController extends Controller
                 }
             }
             $package = new Package();
-            $package->service_id = $request->service_id;
             $package->title = $request->title;
-            $package->package_charge = $request->package_charge;
+            $package->small_charge = $request->small_charge;
+            $package->large_charge = $request->large_charge;
+            $package->gaint_charge = $request->gaint_charge;
             $package->status = $request->status;
             $package->save();
             return redirect()->route('package')->with('success', 'Package Added Successfully');
@@ -56,11 +54,7 @@ class PackageController extends Controller
     {
         $title = "Edit Package";
         $get_package = Package::where('status', '!=', 3)->where('id', $id)->first();
-        $allpackage = DB::table('packages')->
-        leftJoin('services','services.id','=','packages.service_id')
-        ->select('packages.*','services.title as service_title')
-        ->where('packages.status','!=',3)->where('services.status',1)
-        ->orderBy('packages.id','desc')->get();
+        $allpackage = Package::where('status','!=',3)->get();
         $service = Service::where('status',1)->get();
         return view('package.index', compact('title', 'allpackage','get_package','service'));
 
@@ -69,10 +63,10 @@ class PackageController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-
-            'service_id' => 'required',
             'title' => 'required',
-            'package_charge' => 'required|integer',
+            'small_charge' => 'required|integer',
+            'large_charge' => 'required|integer',
+            'gaint_charge' => 'required|integer',
             'status' => 'required',
         ]);
         $check_data = $this->check_exist_data($request, $request->hidden_id);
@@ -88,9 +82,10 @@ class PackageController extends Controller
         }
 
         $package = Package::findOrFail($request->hidden_id);
-        $package->service_id = $request->service_id;
         $package->title = $request->title;
-        $package->package_charge = $request->package_charge;
+        $package->small_charge = $request->small_charge;
+        $package->large_charge = $request->large_charge;
+        $package->gaint_charge = $request->large_charge;
         $package->status = $request->status;
         $package->updated_at = date('Y-m-d H:i:s');
         $package->save();

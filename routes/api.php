@@ -24,12 +24,14 @@ use App\Http\Controllers\EmiCollection;
 // });
 
 
+Route::post('user/signup', [AuthController::class, 'signup']);
 Route::post('user/login', [AuthController::class, 'login']);
 Route::post('user/user-resend-otp', [AuthController::class, 'resend_otp']);
 Route::post('user/user-login-otp', [AuthController::class, 'user_otp']);
 Route::post('user/token-status', [AuthController::class, 'getTokenStatus']);
-
+Route::get('user/referal-signup', [AuthController::class, 'register_referral_user'])->name('referaluser');
 Route::middleware(['jwt'])->group(function () {
+    Route::post('user/referal', [AuthController::class, 'referal']);
     Route::post('user/user-logout', [AuthController::class, 'user_logout']);
     Route::post('user/user-create-pin', [AuthController::class, 'create_pin']);
     Route::get('user/loan-request-list', [LoanRequestController::class, 'loan_request_list']);

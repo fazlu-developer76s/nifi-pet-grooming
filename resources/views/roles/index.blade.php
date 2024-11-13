@@ -17,7 +17,7 @@
                 <!-- Row for equal division -->
                 <div class="row">
                     <!-- Form Section -->
-                    <div class="col-md-6">
+                    <div class="col-md-6 d-none">
                         <div class="card border-0 mb-4">
                             <div class="card-header h6 mb-0 bg-none p-3">
                                 <i class="fa fa-user-shield fa-lg fa-fw text-dark text-opacity-50 me-1"></i>
@@ -62,7 +62,7 @@
                     </div>
 
                     <!-- Table Section -->
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="card border-0 mb-4">
                             <div class="card-header h6 mb-0 bg-none p-3" style="border-bottom: 1px solid #2196f3;">
                                 <i class="fab fa-buromobelexperte fa-lg fa-fw text-dark text-opacity-50 me-1"></i> Role List

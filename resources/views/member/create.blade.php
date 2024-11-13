@@ -55,6 +55,15 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
+                                            <label class="form-label">Employee Type</label>
+                                            <input class="form-control @error('employe_type') is-invalid @enderror" type="text" name="employe_type" placeholder="Enter employe_type" value="@if(empty($get_member)) {{ old('employe_type') }} @else {{ (isset($get_member)) ? $get_member->employe_type : '' ; }} @endif" />
+                                            @error('employe_type')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
                                             <label class="form-label">Name</label>
                                             <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" placeholder="Enter Name" value="@if(empty($get_member)) {{ old('name') }} @else {{ (isset($get_member)) ? $get_member->name : '' ; }} @endif" />
                                             @error('name')

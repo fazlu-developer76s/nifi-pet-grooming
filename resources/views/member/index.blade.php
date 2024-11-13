@@ -41,6 +41,7 @@
                                         <th class="text-nowrap">Mobile No.</th>
                                         <th class="text-nowrap">Aadhar No.</th>
                                         <th class="text-nowrap">Role</th>
+                                        <th class="text-nowrap">Type</th>
                                         <th class="text-nowrap">Created Date</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-nowrap">Action</th>
@@ -56,6 +57,7 @@
                                         <td>{{ $member->mobile_no }}</td>
                                         <td>{{ $member->aadhar_no }}</td>
                                         <td>{{ $member->title }}</td>
+                                        <td>{{ $member->employe_type }}</td>
                                         <td>{{ \Carbon\Carbon::parse($member->created_at)->format('d F Y h:i A') }}</td>
                                         <td>
                                             <div class="form-check form-switch">

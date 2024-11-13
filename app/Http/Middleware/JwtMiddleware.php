@@ -14,11 +14,12 @@ class JwtMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
+
         $token = $request->bearerToken();
         if (!$token) {
             return response()->json(['error' => 'Token not provided'], 401);
         }
-        
+
         try {
             $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
             if ($decoded->exp < time()) {
@@ -27,7 +28,7 @@ class JwtMiddleware
             $request->auth = $decoded;
             $request->user = User::find($decoded->sub);
             if($this->CheckToken($request->user->id,$token)) {
-                
+
             if($request->user->status==2)
             {
                 return response()->json([
@@ -52,7 +53,7 @@ class JwtMiddleware
               'message' => 'Token is invalid or expired',
               'code' => 401
             ]);
-            } 
+            }
         } catch (Exception $e) {
             if($this->CheckToken(null,$token))
             {
@@ -71,12 +72,12 @@ class JwtMiddleware
         if($user_id)
         {
             $checkToken->where('user_id', $user_id);
-            
+
         }
         $checkToken->where('token', $token);
         $checkToken->where('status', 1);
         $tokenDetail =     $checkToken->first();
-            
+
         if($tokenDetail)
         {
             return true;
@@ -85,8 +86,8 @@ class JwtMiddleware
         {
             return false;
         }
-    } 
-    
+    }
+
     public function expireToken($token)
     {
         $expireToken = DB::table('tbl_token')
