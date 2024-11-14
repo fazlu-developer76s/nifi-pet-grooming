@@ -211,6 +211,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Myhelper' => App\Helpers\Permission::class,
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 

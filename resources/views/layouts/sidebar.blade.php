@@ -82,7 +82,7 @@
                 </div>
             </div>
 
-            <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
+            <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link d-none">
                     <div class="menu-icon"> <i class="fas fa-list"></i> </div>
                     <div class="menu-text">Lead Management</div>
                     <div class="menu-caret"></div>
@@ -111,7 +111,7 @@
                 </div>
             </div>
 
-            <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
+            <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link d-none">
                     <div class="menu-icon"> <i class="fas fa-list"></i> </div>
                     <div class="menu-text">Bank Details</div>
                     <div class="menu-caret"></div>
@@ -130,7 +130,7 @@
                 </div>
             </div>
 
-            <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
+            <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link d-none">
                     <div class="menu-icon"> <i class="fas fa-list"></i> </div>
                     <div class="menu-text">Reports</div>
                     <div class="menu-caret"></div>

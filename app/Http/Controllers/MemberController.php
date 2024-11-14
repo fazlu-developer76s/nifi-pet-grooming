@@ -264,12 +264,11 @@ class MemberController extends Controller
 
     public function update_kyc_status($id)
     {
-
         $update_kyc_status = DB::table('kyc_processes')->where('id', $id)->update(['kyc_status' => $_POST['kyc_status']]);
         if ($update_kyc_status) {
             return redirect()->route('view.member.kyc', $id)->with('success', 'Kyc Status Update successfully.');
         } else {
-            return redirect()->route('view.member.kyc', $id)->with('success', 'Error.');
+            return redirect()->route('view.member.kyc', $id)->with('errors', 'Error');
         }
     }
 }

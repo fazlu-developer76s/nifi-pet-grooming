@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -30,9 +31,16 @@ Route::post('user/user-resend-otp', [AuthController::class, 'resend_otp']);
 Route::post('user/user-login-otp', [AuthController::class, 'user_otp']);
 Route::post('user/token-status', [AuthController::class, 'getTokenStatus']);
 Route::get('user/referal-signup', [AuthController::class, 'register_referral_user'])->name('referaluser');
+
 Route::middleware(['jwt'])->group(function () {
+    Route::post('user/get-aadhar-otp',[ApiController::class, 'get_aadhar_otp']);
+    Route::post('user/check-aadhar-otp',[ApiController::class, 'checkaadharotp']);
+    Route::post('user/update-kyc',[ApiController::class, 'update_kyc']);
     Route::post('user/referal', [AuthController::class, 'referal']);
     Route::post('user/user-logout', [AuthController::class, 'user_logout']);
+
+
+
     Route::post('user/user-create-pin', [AuthController::class, 'create_pin']);
     Route::get('user/loan-request-list', [LoanRequestController::class, 'loan_request_list']);
     Route::post('user/update-email-mobile', [BorrowerController::class, 'update_email_mobile_request']);
@@ -56,7 +64,6 @@ Route::middleware(['jwt'])->group(function () {
     Route::post('user/upload-kyc-docs', [KycController::class, 'kycDocs']);
     Route::get('user/loan-reports', [LoanRequestController::class, 'loan_report']);
     Route::get('user/service-list', [LoanRequestController::class, 'service_list']);
-
     Route::get('user/ready-for-disbursement-loan', [LoanRequestController::class, 'ready_for_disbursement_loan']);
     Route::post('user/loan-disbursement', [LoanRequestController::class, 'loan_disbursement']);
     Route::post('user/borrower-image', [LoanRequestController::class, 'borrower_image']);

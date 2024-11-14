@@ -392,6 +392,12 @@ class AuthController extends Controller
         if($user->role_id == 3){
             $user_type = 1;
         }
+        if($user->role_id != 5 && $user->role_id !=3){
+            return response()->json([
+               'status' => 'error',
+               'message' => 'You Dont have permission to refer user'
+            ], 401);
+        }
         $referral_code = strtoupper(uniqid($user->id));
         DB::table('referral_code')->insert(['user_id'=>$user->id,'code'=>$referral_code,'user_type'=>$user_type]);
         $referralUrl = route('referaluser') . '?referral_code=' . $referral_code;
