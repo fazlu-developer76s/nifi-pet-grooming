@@ -124,14 +124,12 @@
                                         <form action="{{ route('update.kyc.status', $member->id) }}" method="POST">
                                             @csrf
                                             @method('PUT') <!-- Assuming you're using PUT method for updates -->
-
                                             <select name="kyc_status" class="form-select" aria-label="Update KYC Status">
-                                                <option value="">Select Kyc Status</option>
+                                                <option value="1">Select Kyc Status</option>
                                                 <option value="2" @if($member->kyc_status == 2) selected @endif>Pending</option>
                                                 <option value="3" @if($member->kyc_status == 3) selected @endif>Approved</option>
                                                 <option value="4" @if($member->kyc_status == 4) selected @endif>Rejected</option>
                                             </select>
-
                                             <button type="submit" class="btn btn-primary mt-2">Update Status</button>
                                         </form>
                                     </div>

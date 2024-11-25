@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kycprocess;
+use App\Models\Package;
+use App\Models\PetCategory;
+use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -129,8 +132,8 @@ class ApiController extends Controller
     {
         $user = $request->user;
         $user_id = $user->id;
-        $user_update = Kycprocess::where('user_id',$user_id)->first();
-        if(!$user_update){
+        $user_update = Kycprocess::where('user_id', $user_id)->first();
+        if (!$user_update) {
             $user_update = new Kycprocess();
             $user_update->kyc_status = 1;
             $user_update->user_id = $user_id;
@@ -206,7 +209,222 @@ class ApiController extends Controller
             $user_update->live_video = $filePath;
         }
         $user_update->save();
-            return response()->json(['status' => 'OK','message' => "KYC updated successfully"]);
-
+        return response()->json(['status' => 'OK', 'message' => "KYC updated successfully"]);
     }
+
+    public function get_services()
+    {
+        $get_service = Service::where('status', 1)->get();
+        if ($get_service) {
+            return response()->json(['status' => 'Success', 'message' => 'Services fetched successfully', 'data' => $get_service]);
+        } else {
+            return response()->json(['status' => 'Error', 'message' => 'No services found']);
+        }
+    }
+
+    public function get_packages()
+    {
+        $get_package = Package::where('status', 1)->orderBy('id', 'desc')->get();
+        $add_package_service = array();
+        if (!empty($get_package)) {
+            foreach ($get_package as $pack) {
+                $pack->service = DB::table('add_package_service as a')->leftJoin('services as b', 'b.id', '=', 'a.service_id')->select('a.package_id', 'a.service_id', 'b.*')->where('a.status', 1)->where('b.status', 1)->where('a.package_id', $pack->id)->get();
+                $add_package_service[] = $pack;
+            }
+        }
+
+        if ($add_package_service) {
+            return response()->json(['status' => 'Success', 'message' => 'Packages fetched successfully', 'data' => $add_package_service]);
+        } else {
+            return response()->json(['status' => 'Error', 'message' => 'No packages found']);
+        }
+    }
+
+    public function create_pet(Request $request)
+    {
+        $rules = array(
+            'pet_name'       => 'required',
+            'pet_image' => "required",
+        );
+        $validate = \Myhelper::FormValidator($rules, $request);
+        if ($validate != "no") {
+            return $validate;
+        }
+        $check_data = $this->check_exist_data($request, null);
+            if ($check_data) {
+                $message = '';
+                if ($check_data->title == $request->pet_name) {
+                    $message .= "Pet Category ";
+                }
+                if ($message) {
+                   return response()->json(['status' => 'Error', 'message' => $message.'already exists.']);
+                }
+            }
+        $pet = new PetCategory();
+        if ($request->pet_name) {
+            $pet->title = $request->pet_name;
+        }
+        $pet->user_id = $request->user->id;
+        if ($request->hasFile('pet_image')) {
+            $file = $request->file('pet_image');
+            $filePath = $file->store('pet_category', 'public');
+            $pet->image = $filePath;
+        }
+        if ($request->pet_size) {
+            $pet->pet_size = $request->pet_size;
+        }
+        if ($request->pet_bred) {
+            $pet->pet_bred = $request->pet_bred;
+        }
+        $pet->save();
+        return response()->json(['status' => 'OK', 'message' => "Pet Add Successfully"]);
+    }
+
+    public function list_pet(Request $request)
+    {
+        $get_pet = PetCategory::where('user_id', $request->user->id)->where('status', 1)->get();
+        if ($get_pet) {
+            return response()->json(['status' => 'Success', 'message' => 'Pet List Successfully', 'data' => $get_pet]);
+        }
+    }
+
+    public function update_pet(Request $request, $id)
+    {
+        if (!$id) {
+            return response()->json(['status' => 'Error', 'message' => 'Pet ID is required']);
+        }
+        if ($request->method() == "GET") {
+            if (!empty($id)) {
+                $get_single_pet = PetCategory::where('id', $id)->where('status', 1)->get();
+                if ($get_single_pet) {
+                    return response()->json(['status' => 'Success', 'message' => 'Single Pet Fetch Successfully', 'data' => $get_single_pet]);
+                }
+            }
+        }
+
+        if ($request->method() == "POST") {
+            $rules = array(
+                'pet_name'       => 'required',
+            );
+            $validate = \Myhelper::FormValidator($rules, $request);
+            if ($validate != "no") {
+                return $validate;
+            }
+            $check_data = $this->check_exist_data($request, $id);
+            if ($check_data) {
+                $message = '';
+                if ($check_data->title == $request->pet_name) {
+                    $message .= "Pet Category ";
+                }
+                if ($message) {
+                 return response()->json(['status' => 'ERR', 'message' => "Pet Category Already Exists"]);
+                }
+            }
+            $pet = PetCategory::findOrfail($id);
+
+            if ($request->pet_name) {
+                $pet->title = $request->pet_name;
+            }
+            $pet->user_id = $request->user->id;
+            if ($request->hasFile('pet_image')) {
+                $file = $request->file('pet_image');
+                $filePath = $file->store('pet_category', 'public');
+                $pet->image = $filePath;
+            }
+            if ($request->pet_size) {
+                $pet->pet_size = $request->pet_size;
+            }
+            if ($request->pet_bred) {
+                $pet->pet_bred = $request->pet_bred;
+            }
+            $pet->save();
+            return response()->json(['status' => 'OK', 'message' => "Pet Update Successfully"]);
+        }
+    }
+
+    public function create_booking(Request $request)
+    {
+        $rules = array(
+            'pet_id'       => 'required',
+            'booking_date'       => 'required',
+            'booking_time'       => 'required',
+        );
+        $validate = \Myhelper::FormValidator($rules, $request);
+        if ($validate != "no") {
+            return $validate;
+        }
+        $pet_id = $request->pet_id;
+        $booking_date = $request->booking_date;
+        $booking_time = $request->booking_time;
+        $description  = $request->description;
+        $insert_booking = DB::table('tbl_pet_bookings')->insert([
+            'pet_id' => $pet_id,
+            'booking_date' => $booking_date,
+            'booking_time' => $booking_time,
+            'description' => $description,
+            'customer_id' => $request->user->id
+        ]);
+        if ($insert_booking) {
+            return response()->json(['status' => 'OK', 'message' => 'Booking created successfully']);
+        } else {
+            return response()->json(['status' => 'Error', 'message' => 'Failed to create booking']);
+        }
+    }
+
+    public function fetch_booking(Request $request)
+    {
+
+        $booking = DB::table('pet_category')->where('user_id', $request->user->id)->where('status', 1)->orderBy('id', 'desc')->get();
+
+        $get_array = array();
+        if (!empty($booking)) {
+
+            foreach ($booking as $book) {
+                $book->get_booking = DB::table('tbl_pet_bookings as a')->join('users as b', 'a.customer_id', '=', 'b.id')->select('b.name as user_name', 'a.*')->where('a.status', 1)->where('b.status', 1)->orderBy('id', 'desc')->get();
+                $get_array[] = $book;
+            }
+
+            return response()->json(['status' => 'OK', 'message' => 'Booking fetched successfully', 'data' => $get_array]);
+        } else {
+            return response()->json(['status' => 'Error', 'message' => 'No booking found']);
+        }
+    }
+
+    public function accept_booking(Request $request)
+    {
+
+        $rules = array(
+            'id'       => 'required',
+            'booking_status'       => 'required'
+        );
+        $validate = \Myhelper::FormValidator($rules, $request);
+        if ($validate != "no") {
+            return $validate;
+        }
+        $booking_status_update = DB::table('tbl_pet_bookings')
+            ->where('id', $request->id)
+            ->update(['booking_status' => $request->booking_status]);
+            return response()->json(['status' => 'OK', 'message' => 'Booking status updated successfully']);
+    }
+
+    public function check_exist_data($request, $id)
+    {
+        $query = PetCategory::where('status', '!=', 3);
+        if ($id !== null) {
+            $query->where('id', '!=', $id);
+        }
+        $check_pet_category = $query->where(function ($q) use ($request) {
+            $q->where('title', $request->pet_name);
+        })->first();
+
+        return $check_pet_category;
+    }
+
+    public function delete_pet(Request $request){
+        $update_pet_status = PetCategory::where('id',$request->id)->update(['status'=>3]);
+        if($update_pet_status){
+            return response()->json(['message' => 'Pet deleted successfully.'], 200);
+        }
+    }
+
 }

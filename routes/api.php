@@ -38,6 +38,15 @@ Route::middleware(['jwt'])->group(function () {
     Route::post('user/update-kyc',[ApiController::class, 'update_kyc']);
     Route::post('user/referal', [AuthController::class, 'referal']);
     Route::post('user/user-logout', [AuthController::class, 'user_logout']);
+    Route::post('user/get-services', [ApiController::class, 'get_services']);
+    Route::post('user/get-packages', [ApiController::class, 'get_packages']);
+    Route::post('user/create-pet', [ApiController::class, 'create_pet']);
+    Route::match(['get', 'post'], 'user/update-pet/{id}', [ApiController::class, 'update_pet']);
+    Route::delete('user/delete-pet', [ApiController::class, 'delete_pet']);
+    Route::post('user/list-pet', [ApiController::class, 'list_pet']);
+    Route::post('user/create-booking', [ApiController::class, 'create_booking']);
+    Route::post('user/accept-booking', [ApiController::class, 'accept_booking']);
+    Route::post('user/fetch-grommer-booking', [ApiController::class, 'fetch_booking']);
 
 
 
