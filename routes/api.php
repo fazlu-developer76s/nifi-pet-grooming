@@ -8,6 +8,7 @@ use App\Http\Controllers\LoanRequestController;
 use App\Http\Controllers\BorrowerController;
 use App\Http\Controllers\KycController;
 use App\Http\Controllers\EmiCollection;
+use App\Http\Controllers\MessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +48,10 @@ Route::middleware(['jwt'])->group(function () {
     Route::post('user/create-booking', [ApiController::class, 'create_booking']);
     Route::post('user/accept-booking', [ApiController::class, 'accept_booking']);
     Route::post('user/fetch-grommer-booking', [ApiController::class, 'fetch_booking']);
-
+    Route::post('user/messages', [MessageController::class, 'getMessages']);
+    Route::post('user/send-message', [MessageController::class, 'sendMessage']);
+    Route::post('user/mark-as-read', [MessageController::class, 'markAsRead']);
+    Route::post('user/fetch-all-users', [MessageController::class, 'fetchUsers']);
 
 
     Route::post('user/user-create-pin', [AuthController::class, 'create_pin']);
