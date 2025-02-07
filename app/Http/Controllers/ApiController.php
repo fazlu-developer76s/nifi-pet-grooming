@@ -127,7 +127,7 @@ class ApiController extends Controller
             return response()->json(['status' => 'ERR', 'message' => "Please contact your administrator"]);
         }
     }
-    
+
    public function update_profile(Request $request)
 {
      $user = $request->user;
@@ -150,7 +150,7 @@ class ApiController extends Controller
             'status' => 'error',
             'message' => 'Email or Mobile already exists'
         ], 422);
-    
+
         }
 
         $user->name = $request->name;
@@ -166,7 +166,7 @@ class ApiController extends Controller
     return response()->json(['status' => 'OK', 'message' => "Profile updated successfully"]);
 }
 
-      
+
             public function user_profile(Request $request)
             {
                 $user_id = $request->user->id;
@@ -197,9 +197,9 @@ class ApiController extends Controller
 
 
     public function update_kyc(Request $request)
-    {   
+    {
 
-        
+
         $user = $request->user;
         $user_id = $user->id;
         $user_update = Kycprocess::where('user_id', $user_id)->first();
@@ -299,6 +299,7 @@ class ApiController extends Controller
         if (!empty($get_package)) {
             foreach ($get_package as $pack) {
                 $pack->service = DB::table('add_package_service as a')->leftJoin('services as b', 'b.id', '=', 'a.service_id')->select('a.package_id', 'a.service_id', 'b.*')->where('a.status', 1)->where('b.status', 1)->where('a.package_id', $pack->id)->get();
+                $pack->images = DB::table('packages_image')->where('status',1)->where('package_id',$pack->id)->get();
                 $add_package_service[] = $pack;
             }
         }
@@ -459,7 +460,7 @@ class ApiController extends Controller
             return response()->json(['status' => 'Error', 'message' => 'No booking found']);
         }
     }
-    
+
         public function fetch_pet_category(Request $request)
     {
 

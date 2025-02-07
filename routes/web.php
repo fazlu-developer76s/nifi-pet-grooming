@@ -97,6 +97,7 @@ Route::middleware(['auth', 'checkRole'])->group(function () {
     Route::get('/package/{id}', [PackageController::class, 'edit'])->name('package.edit');
     Route::post('/package/update', [PackageController::class, 'update'])->name('package.update');
     Route::delete('/package/delete/{id}', [PackageController::class, 'destroy'])->name('package.destroy');
+    Route::post('/package/delete-sub-image', [PackageController::class, 'delete_image'])->name('delete.image');
 
     // Refer And Earn Setup Route
     Route::get('/refer', [ReferController::class, 'index'])->name('refer');

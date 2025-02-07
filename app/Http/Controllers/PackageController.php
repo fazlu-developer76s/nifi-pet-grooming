@@ -12,9 +12,9 @@ class PackageController extends Controller
     public function index()
     {
         $title = "Package List";
-        $service = Service::where('status',1)->get();
-        $allpackage = Package::where('status','!=',3)->get();
-        return view('package.index', compact('title', 'allpackage','service'));
+        $service = Service::where('status', 1)->get();
+        $allpackage = Package::where('status', '!=', 3)->orderBy('id','desc')->get();
+        return view('package.index', compact('title', 'allpackage', 'service'));
     }
 
     public function create(Request $request)
@@ -45,7 +45,18 @@ class PackageController extends Controller
             $package->large_charge = $request->large_charge;
             $package->gaint_charge = $request->gaint_charge;
             $package->status = $request->status;
+            $package->description = $request->description;
+            if ($request->hasFile('thumbnail')) {
+                $path = $request->file('thumbnail')->store('hotel_images', 'public');
+                $package->image = $path;
+            }
             $package->save();
+            if ($request->hasFile('hotel_images')) {
+                foreach ($request->file('hotel_images') as $image) {
+                    $filePath = $image->store('hotel_images', 'public');
+                    DB::table('packages_image')->insert(['package_id' => $package->id,  'image' => $filePath]);
+                }
+            }
             return redirect()->route('package')->with('success', 'Package Added Successfully');
         }
     }
@@ -53,11 +64,15 @@ class PackageController extends Controller
     public function edit($id)
     {
         $title = "Edit Package";
-        $get_package = Package::where('status', '!=', 3)->where('id', $id)->first();
-        $allpackage = Package::where('status','!=',3)->get();
-        $service = Service::where('status',1)->get();
-        return view('package.index', compact('title', 'allpackage','get_package','service'));
-
+        $get_pack = Package::where('status', '!=', 3)->where('id', $id)->get();
+        $get_package = [];
+        foreach ($get_pack as $package){
+            $package->images = DB::table('packages_image')->where('status',1)->where('package_id',$package->id)->get();
+            $get_package[] = $package;
+        }
+        $allpackage = Package::where('status', '!=', 3)->orderBy('id','desc')->get();
+        $service = Service::where('status', 1)->get();
+        return view('package.index', compact('title', 'allpackage', 'get_package', 'service'));
     }
 
     public function update(Request $request)
@@ -88,7 +103,17 @@ class PackageController extends Controller
         $package->gaint_charge = $request->large_charge;
         $package->status = $request->status;
         $package->updated_at = date('Y-m-d H:i:s');
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('hotel_images', 'public');
+            $package->image = $path;
+        }
         $package->save();
+        if ($request->hasFile('hotel_images')) {
+            foreach ($request->file('hotel_images') as $image) {
+                $filePath = $image->store('hotel_images', 'public');
+                DB::table('packages_image')->insert(['package_id' => $package->id,  'image' => $filePath]);
+            }
+        }
         return redirect()->route('package')->with('success', 'Package Updated Successfully');
     }
 
@@ -112,5 +137,21 @@ class PackageController extends Controller
         })->first();
 
         return $check_route;
+    }
+
+    public function delete_image(Request $request)
+    {
+        $image = DB::table('packages_image')->where('id', $request->id)->update(['status' => 3]);
+        if ($image) {
+            // if ($image->image) {
+            //     Storage::disk('public')->delete($image->image);
+            // }
+            // $image->delete();
+            echo 1;
+            die;
+            return response()->json(['success' => 'Image deleted successfully.']);
+        } else {
+            return response()->json(['error' => 'Image not found.']);
+        }
     }
 }

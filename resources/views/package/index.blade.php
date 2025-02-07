@@ -16,7 +16,7 @@
 }
 
 </style>
-@if(isset($get_package))
+@if(isset($get_package[0]))
 @php $form_action = "package.update" @endphp
 @else
 @php $form_action = "package.create" @endphp
@@ -43,15 +43,15 @@
                                 Add Package
                             </div>
                         </div>
-                        <form action="{{ route($form_action) }}" method="POST">
+                        <form action="{{ route($form_action) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <input type="hidden" value="{{ (isset($get_package)) ? $get_package->id : '' ; }}" name="hidden_id">
+                            <input type="hidden" value="{{ (isset($get_package[0])) ? $get_package[0]->id : '' ; }}" name="hidden_id">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="mb-3">
                                             <label class="form-label">Title</label>
-                                            <input class="form-control @error('title') is-invalid @enderror" type="text" name="title" placeholder="Enter Title" value="@if(empty($get_package)) {{ old('title') }} @else {{ (isset($get_package)) ? $get_package->title : '' ; }} @endif" />
+                                            <input class="form-control @error('title') is-invalid @enderror" type="text" name="title" placeholder="Enter Title" value="@if(empty($get_package[0])) {{ old('title') }} @else {{ (isset($get_package[0])) ? $get_package[0]->title : '' ; }} @endif" />
                                             @error('title')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -60,7 +60,7 @@
                                     <div class="col-md-3">
                                         <div class="mb-3">
                                             <label class="form-label">Small Breed</label>
-                                            <input class="form-control @error('small_charge') is-invalid @enderror" type="text" name="small_charge" placeholder="Enter Package Charge" value="@if(empty($get_package)) {{ old('small_charge') }} @else {{ (isset($get_package)) ? $get_package->small_charge : '' ; }} @endif" />
+                                            <input class="form-control @error('small_charge') is-invalid @enderror" type="text" name="small_charge" placeholder="Enter Package Charge" value="@if(empty($get_package[0])) {{ old('small_charge') }} @else {{ (isset($get_package[0])) ? $get_package[0]->small_charge : '' ; }} @endif" />
                                             @error('small_charge')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -69,7 +69,7 @@
                                     <div class="col-md-3">
                                         <div class="mb-3">
                                             <label class="form-label">Large Breed</label>
-                                            <input class="form-control @error('large_charge') is-invalid @enderror" type="text" name="large_charge" placeholder="Enter Package Charge" value="@if(empty($get_package)) {{ old('large_charge') }} @else {{ (isset($get_package)) ? $get_package->large_charge : '' ; }} @endif" />
+                                            <input class="form-control @error('large_charge') is-invalid @enderror" type="text" name="large_charge" placeholder="Enter Package Charge" value="@if(empty($get_package[0])) {{ old('large_charge') }} @else {{ (isset($get_package[0])) ? $get_package[0]->large_charge : '' ; }} @endif" />
                                             @error('large_charge')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -78,9 +78,71 @@
                                     <div class="col-md-3">
                                         <div class="mb-3">
                                             <label class="form-label">Gaint Breed</label>
-                                            <input class="form-control @error('gaint_charge') is-invalid @enderror" type="text" name="gaint_charge" placeholder="Enter Package Charge" value="@if(empty($get_package)) {{ old('gaint_charge') }} @else {{ (isset($get_package)) ? $get_package->gaint_charge : '' ; }} @endif" />
+                                            <input class="form-control @error('gaint_charge') is-invalid @enderror" type="text" name="gaint_charge" placeholder="Enter Package Charge" value="@if(empty($get_package[0])) {{ old('gaint_charge') }} @else {{ (isset($get_package[0])) ? $get_package[0]->gaint_charge : '' ; }} @endif" />
                                             @error('gaint_charge')
                                             <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                      <!-- Thumbnail Image Upload -->
+                                      <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">Thumbnail Image</label>
+                                            <input class="form-control @error('thumbnail') is-invalid @enderror"
+                                                type="file" name="thumbnail" />
+                                            @error('thumbnail')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Display Existing Thumbnail -->
+                                        @if (!empty($get_package[0]->image))
+                                            <div class="mb-4 text-center">
+                                                <img src="{{ asset('storage/' . $get_package[0]->image) }}"
+                                                    class="img-thumbnail" alt="Hotel Thumbnail"
+                                                    style="max-width: 100px; height: auto;">
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Multiple Images Upload -->
+                                    <div class="col-md-8">
+                                        <div class="mb-3">
+                                            <label class="form-label">Additional Images</label>
+                                            <input
+                                                class="form-control @error('hotel_images.*') is-invalid @enderror"
+                                                type="file" name="hotel_images[]" multiple />
+                                            @error('hotel_images.*')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <!-- Display Existing Images -->
+                                        @if (!empty($get_package[0]->images))
+                                            <div class="row g-2">
+                                                @foreach ($get_package[0]->images as $img)
+                                                    <div class="col-4 col-md-3 col-lg-2 position-relative">
+                                                        <span
+                                                            class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger"
+                                                            style="cursor: pointer;"
+                                                            onclick="Deletesubimage('{{ $img->id }}')">
+                                                            &times;
+                                                        </span>
+                                                        <img src="{{ asset('storage/' . $img->image) }}"
+                                                            class="img-thumbnail" alt="Hotel Image"
+                                                            style="width: 50%; height: auto;">
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                     <!-- Site Specification (Description) -->
+                                     <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">(Description)</label>
+                                            <textarea class="form-control @error('description') is-invalid @enderror" name="description" id="editor2"
+                                                rows="4" placeholder="Enter site description">{{ old('description', $get_package[0]->description ?? '') }}									</textarea>
+                                            @error('description')
+                                                <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
@@ -88,8 +150,8 @@
                                         <div class="mb-3">
                                             <label class="form-label">Status</label>
                                             <select class="form-control custom-select-icon @error('status') is-invalid @enderror" name="status">
-                                                <option value="1" {{ old('status') == 1 ? 'selected' : '' }} {{ (isset($get_package) && $get_package->status == 1) ? 'selected' : '' ; }}>Active </option>
-                                                <option value="2" {{ old('status') == 2 ? 'selected' : '' }} {{ (isset($get_package) && $get_package->status == 2) ? 'selected' : '' ; }}>Inactive </option>
+                                                <option value="1" {{ old('status') == 1 ? 'selected' : '' }} {{ (isset($get_package[0]) && $get_package[0]->status == 1) ? 'selected' : '' ; }}>Active </option>
+                                                <option value="2" {{ old('status') == 2 ? 'selected' : '' }} {{ (isset($get_package[0]) && $get_package[0]->status == 2) ? 'selected' : '' ; }}>Inactive </option>
                                             </select>
                                             @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -192,4 +254,5 @@
     </div>
 
 @endsection
+
 

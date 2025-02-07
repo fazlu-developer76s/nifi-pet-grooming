@@ -429,6 +429,32 @@
     }
 </script>
 <script>
+    function Deletesubimage(id) {
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        if(confirm('Are you sure you want to delete this image?')){
+
+            $.ajax({
+                url: "{{ route('delete.image') }}",
+                type: 'POST',
+                data: {
+                    _token: csrfToken,
+                    id: id,
+                },
+                success: function(response) {
+                    if (response == 1) {
+                        window.location.reload();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert("An error occurred while saving the note.");
+                }
+            });
+        }
+        return false;
+    }
+</script>
+<script>
     $(document).on('click', 'input[name="add_permission"]', function() {
         let isChecked = $(this).prop("checked");
         let packageId = $(this).data('package');
