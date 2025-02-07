@@ -127,9 +127,79 @@ class ApiController extends Controller
             return response()->json(['status' => 'ERR', 'message' => "Please contact your administrator"]);
         }
     }
+    
+   public function update_profile(Request $request)
+{
+     $user = $request->user;
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'mobile' => 'required|digits:10',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
+            $exists = User::where(function ($query) use ($request, $user) {
+                $query->where('email', $request->email)
+                      ->orWhere('mobile_no', $request->mobile);
+            })
+        ->where('id', '!=', $user->id)
+        ->where('status', '!=', 3)
+        ->exists();
+        if ($exists) {
+            return response()->json([
+            'status' => 'error',
+            'message' => 'Email or Mobile already exists'
+        ], 422);
+    
+        }
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->mobile_no = $request->mobile;
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('uploads/profile_images'), $imageName);
+        $user->image = 'uploads/profile_images/' . $imageName;
+    }
+    $user->save();
+    return response()->json(['status' => 'OK', 'message' => "Profile updated successfully"]);
+}
+
+      
+            public function user_profile(Request $request)
+            {
+                $user_id = $request->user->id;
+                $user_details = User::where('id', $user_id)
+                    ->first();
+                $role_details = DB::table('roles')
+                ->where('id', $request->user->role_id)
+                ->where('status',1)
+                ->first();
+                if($user_details)
+                {
+                    return response()->json([
+                       'status' =>'success',
+                       'message' => 'User profile',
+                        'data' => $user_details,
+                        'role' => $role_details->title,
+                    ], 200);
+                }
+                else
+                {
+                    return response()->json([
+                       'status' => 'error',
+                       'message' => 'User not found'
+                    ], 401);
+                }
+            }
+
+
 
     public function update_kyc(Request $request)
-    {
+    {   
+
+        
         $user = $request->user;
         $user_id = $user->id;
         $user_update = Kycprocess::where('user_id', $user_id)->first();
@@ -385,6 +455,18 @@ class ApiController extends Controller
             }
 
             return response()->json(['status' => 'OK', 'message' => 'Booking fetched successfully', 'data' => $get_array]);
+        } else {
+            return response()->json(['status' => 'Error', 'message' => 'No booking found']);
+        }
+    }
+    
+        public function fetch_pet_category(Request $request)
+    {
+
+        $fetch_pet_category = DB::table('pet_category')->where('status', 1)->orderBy('id', 'desc')->get();
+        if (!empty($fetch_pet_category)) {
+
+            return response()->json(['status' => 'OK', 'message' => ' fetched Pet Category successfully', 'data' => $fetch_pet_category]);
         } else {
             return response()->json(['status' => 'Error', 'message' => 'No booking found']);
         }

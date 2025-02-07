@@ -37,6 +37,8 @@ Route::middleware(['jwt'])->group(function () {
     Route::post('user/get-aadhar-otp',[ApiController::class, 'get_aadhar_otp']);
     Route::post('user/check-aadhar-otp',[ApiController::class, 'checkaadharotp']);
     Route::post('user/update-kyc',[ApiController::class, 'update_kyc']);
+    Route::post('user/update-profile-user',[ApiController::class, 'update_profile']);
+    Route::get('user/get-user-profile', [ApiController::class, 'user_profile']);
     Route::post('user/referal', [AuthController::class, 'referal']);
     Route::post('user/user-logout', [AuthController::class, 'user_logout']);
     Route::post('user/get-services', [ApiController::class, 'get_services']);
@@ -46,6 +48,7 @@ Route::middleware(['jwt'])->group(function () {
     Route::delete('user/delete-pet', [ApiController::class, 'delete_pet']);
     Route::post('user/list-pet', [ApiController::class, 'list_pet']);
     Route::post('user/create-booking', [ApiController::class, 'create_booking']);
+    Route::get('user/fetch-pet-category', [ApiController::class, 'fetch_pet_category']);
     Route::post('user/accept-booking', [ApiController::class, 'accept_booking']);
     Route::post('user/fetch-grommer-booking', [ApiController::class, 'fetch_booking']);
     Route::post('user/messages', [MessageController::class, 'getMessages']);
