@@ -482,7 +482,8 @@ class ApiController extends Controller
     public function create_booking(Request $request)
     {
         $rules = array(
-            'pet_id'       => 'required',
+            'package_id'       => 'required',
+            'address_id'       => 'required',
             'booking_date'       => 'required',
             'booking_time'       => 'required',
         );
@@ -490,22 +491,37 @@ class ApiController extends Controller
         if ($validate != "no") {
             return $validate;
         }
-        $pet_id = $request->pet_id;
+        $package_id = $request->package_id;
+        $address_id = $request->address_id;
         $booking_date = $request->booking_date;
         $booking_time = $request->booking_time;
         $description  = $request->description;
+        $get_address  = DB::table('tbl_address')->where('status', 1)->where('id', $address_id)->where('user_id', $request->user->id)->first();
         $insert_booking = DB::table('tbl_pet_bookings')->insert([
-            'pet_id' => $pet_id,
+            'package_id' => $package_id,
             'booking_date' => $booking_date,
             'booking_time' => $booking_time,
             'description' => $description,
-            'customer_id' => $request->user->id
+            'customer_id' => $request->user->id,
+            'flat_house_no'         => $get_address->flat_house_no,
+            'area_sector_locality'  => $get_address->area_sector_locality,
+            'city_district'         => $get_address->city_district,
+            'state'                 => $get_address->state,
+            'pincode'               => $get_address->pincode,
+            'complete_address'      => $get_address->complete_address,
+            'email_address'         => $get_address->email_address
         ]);
         if ($insert_booking) {
             return response()->json(['status' => 'OK', 'message' => 'Booking created successfully']);
         } else {
             return response()->json(['status' => 'Error', 'message' => 'Failed to create booking']);
         }
+    }
+
+    public function my_booking(Request $request)
+    {
+        $get_array = DB::table('tbl_pet_bookings as a')->select('a.*')->where('a.status', 1)->orderBy('a.id', 'desc')->get();
+        return response()->json(['status' => 'OK', 'message' => 'Booking fetched successfully', 'data' => $get_array], 200);
     }
 
     public function fetch_booking(Request $request)
@@ -574,6 +590,87 @@ class ApiController extends Controller
         $update_pet_status = PetCategory::where('id', $request->id)->update(['status' => 3]);
         if ($update_pet_status) {
             return response()->json(['message' => 'Pet deleted successfully.'], 200);
+        }
+    }
+
+    public function add_to_cart(Request $request, $id)
+    {
+        $check_cart = DB::table('tbl_cart')->where('user_id', $request->user->id)->where('service_id', $id)->first();
+        if ($check_cart) {
+            return response()->json(['message' => 'Service already added to cart.'], 200);
+        }
+        $add_cart = DB::table('tbl_cart')->insert(['user_id' => $request->user->id, 'service_id' => $id]);
+        if ($add_cart) {
+            return response()->json(['message' => 'Service added to cart successfully.'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to add service to cart.'], 500);
+        }
+    }
+    public function get_cart_services(Request $request)
+    {
+        $cart_services = DB::table('tbl_cart as a')
+            ->join('packages as b', 'a.service_id', '=', 'b.id')
+            ->select('b.*', 'a.id as cart_id')->where('b.status', 1)
+            ->get();
+        return response()->json(['data' => $cart_services], 200);
+    }
+    public function delete_cart_service(Request $request, $id)
+    {
+        $delete_cart_service = DB::table('tbl_cart')->where('id', $id)->delete();
+        if ($delete_cart_service) {
+            return response()->json(['message' => 'Service deleted from cart successfully.'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to delete service from cart.'], 500);
+        }
+    }
+
+    public function add_address(Request $request)
+    {
+
+        $rules = [
+            'flat_house_no'         => 'required|string',
+            'area_sector_locality'  => 'required|string',
+            'city_district'         => 'required|string',
+            'state'                 => 'required|string',
+            'pincode'               => 'required|digits:6',
+            'complete_address'      => 'required|string',
+            'email_address'         => 'nullable|email'
+        ];
+        $validate = \Myhelper::FormValidator($rules, $request);
+        if ($validate != "no") {
+            return $validate;
+        }
+        $inserted = DB::table('tbl_address')->insert([
+            'user_id'               => $request->user->id,
+            'flat_house_no'         => $request->flat_house_no,
+            'area_sector_locality'  => $request->area_sector_locality,
+            'city_district'         => $request->city_district,
+            'state'                 => $request->state,
+            'pincode'               => $request->pincode,
+            'complete_address'      => $request->complete_address,
+            'email_address'         => $request->email_address
+        ]);
+        if ($inserted) {
+            return response()->json(['message' => 'Address added successfully.'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to add address.'], 500);
+        }
+    }
+
+    public function get_address(Request $request)
+    {
+        $addresses = DB::table('tbl_address')->where('status', 1)->get();
+        return response()->json(['data' => $addresses], 200);
+    }
+
+    public function delete_address(Request $request, $id)
+    {
+        $deleted = DB::table('tbl_address')->where('id', $id)->delete();
+
+        if ($deleted) {
+            return response()->json(['message' => 'Address deleted successfully.'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to delete address.'], 500);
         }
     }
 }
