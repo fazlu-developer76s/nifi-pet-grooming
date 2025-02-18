@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kycprocess;
 use App\Models\Package;
-use App\Models\PetCategory;
+use App\Models\Pets;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -368,8 +368,8 @@ class ApiController extends Controller
             }
         }
 
-        // Create a new PetCategory instance
-        $pet = new PetCategory();
+        // Create a new Pets instance
+        $pet = new Pets();
         $pet->user_id = $request->user->id;
 
         // Handle the pet image upload
@@ -398,7 +398,7 @@ class ApiController extends Controller
 
     public function list_pet(Request $request)
     {
-        $get_pet = PetCategory::where('user_id', $request->user->id)->where('status', 1)->get();
+        $get_pet = Pets::where('user_id', $request->user->id)->where('status', 1)->get();
         if ($get_pet) {
             return response()->json(['status' => 'Success', 'message' => 'Pet List Successfully', 'data' => $get_pet]);
         }
@@ -410,7 +410,7 @@ class ApiController extends Controller
         }
         if ($request->method() == "GET") {
             if (!empty($id)) {
-                $get_single_pet = PetCategory::where('id', $id)->where('status', 1)->get();
+                $get_single_pet = Pets::where('id', $id)->where('status', 1)->get();
                 if ($get_single_pet) {
                     return response()->json(['status' => 'Success', 'message' => 'Single Pet Fetch Successfully', 'data' => $get_single_pet]);
                 }
@@ -450,7 +450,7 @@ class ApiController extends Controller
             }
 
             // Find the pet category by ID
-            $pet = PetCategory::findOrFail($id);
+            $pet = Pets::findOrFail($id);
 
             // Update the pet category details
             $pet->pet_name = $request->pet_name;
@@ -574,7 +574,7 @@ class ApiController extends Controller
 
     public function check_exist_data($request, $id)
     {
-        $query = PetCategory::where('status', '!=', 3);
+        $query = Pets::where('status', '!=', 3);
         if ($id !== null) {
             $query->where('id', '!=', $id);
         }
@@ -587,7 +587,7 @@ class ApiController extends Controller
 
     public function delete_pet(Request $request)
     {
-        $update_pet_status = PetCategory::where('id', $request->id)->update(['status' => 3]);
+        $update_pet_status = Pets::where('id', $request->id)->update(['status' => 3]);
         if ($update_pet_status) {
             return response()->json(['message' => 'Pet deleted successfully.'], 200);
         }
