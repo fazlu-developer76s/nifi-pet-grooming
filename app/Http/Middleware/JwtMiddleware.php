@@ -26,7 +26,7 @@ class JwtMiddleware
                 return response()->json(['error' => 'Token has expired'], 401);
             }
             $request->auth = $decoded;
-            $request->user = User::find($decoded->sub);
+            $request->user = User::find($decoded->sub)->where('status',1);
             if($this->CheckToken($request->user->id,$token)) {
 
             if($request->user->status==2)

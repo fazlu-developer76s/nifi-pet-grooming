@@ -27,7 +27,7 @@ class AuthController extends Controller
                     'email',
                 ],
             ]);
-            $user = User::where('email', $request->email)
+            $user = User::where('email', $request->email)->where('status','!=',3)
                 ->orWhere('mobile_no', $request->mobile_no)
                 ->first();
 
@@ -55,16 +55,21 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+
         $validated = $request->validate([
             'mobile_no' => [
                 'required',
                 'regex:/^[6-9][0-9]{9}$/',
             ],
         ]);
-        $request->validate([
-            'mobile_no' => 'required',
-        ]);
-        $user = DB::table('users as a')->leftJoin('roles as b', 'a.role_id', 'b.id')->select('a.*', 'b.title as role_type')->where('a.mobile_no', $request->mobile_no)->first();
+        $user = DB::table('users as a')
+        ->Join('roles as b', 'a.role_id', '=', 'b.id')
+        ->select('a.*', 'b.title as role_type')
+        ->where('a.mobile_no', $request->mobile_no)
+        ->where('a.status', 1)
+        ->where('b.id','!=', 1)
+        ->first();
+        dd($user);
         if ($user) {
             if ($otp = $this->userOTP($request->mobile_no)) {
                 $this->GenerateOTP($otp, $user->id);
@@ -95,7 +100,7 @@ class AuthController extends Controller
                 'digits:4',
             ],
         ]);
-        $user = User::where('mobile_no', $request->mobile_no)->first();
+        $user = User::where('mobile_no', $request->mobile_no)->where('status',1)->first();
         if ($user) {
             $getOTP = DB::table('tbl_otp')
                 ->where('user_id', $user->id)
@@ -421,11 +426,11 @@ class AuthController extends Controller
                 'email',
             ],
         ]);
-        $referralCode = DB::table('referral_code')->where('code', $request->referral_code)->first();
-        $get_user = User::find($referralCode->id);
+        $referralCode = DB::table('referral_code')->where('code', $request->referral_code)->where('status',1)->first();
+        $get_user = User::find($referralCode->id)->where('status',1);
         $parent_id = $get_user->id;
         $user = User::where('email', $request->email)
-            ->orWhere('mobile_no', $request->mobile_no)
+            ->orWhere('mobile_no', $request->mobile_no)->where('status','!=',3)
             ->first();
 
         if ($user) {

@@ -16,8 +16,9 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ReferController;
 
 Route::get('/', function () {
-    return view('home');
+    return view('auth.login');
 });
+
 
 Auth::routes();
 
@@ -25,7 +26,7 @@ Auth::routes();
 Route::middleware(['auth', 'checkRole'])->group(function () {
     // Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', [DashboardController::class, 'index'])->name('home');
 
     // Role Routes
     Route::get('/roles', [RoleController::class, 'index'])->name('roles');
