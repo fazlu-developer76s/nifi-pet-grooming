@@ -131,13 +131,26 @@ class ApiController extends Controller
    public function update_profile(Request $request)
 {
      $user = $request->user;
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'mobile' => 'required|digits:10',
+  $rules = array(
+            'name'       => 'required',
+            'email' => "required",
+            'mobile'    => "required",
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-        ]);
+        );
+        $validate = \Myhelper::FormValidator($rules, $request);
+        if ($validate != "no") {
+            return $validate;
+        }
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'email' => 'required|email|max:255',
+        //     'mobile' => 'required|digits:10',
+        //     'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        // ]);
+        
+        
+        
+       
             $exists = User::where(function ($query) use ($request, $user) {
                 $query->where('email', $request->email)
                       ->orWhere('mobile_no', $request->mobile);
@@ -162,8 +175,23 @@ class ApiController extends Controller
         $image->move(public_path('uploads/profile_images'), $imageName);
         $user->image = 'uploads/profile_images/' . $imageName;
     }
-    $user->save();
-    return response()->json(['status' => 'OK', 'message' => "Profile updated successfully"]);
+      if ($user->save()) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profile updated successfully',
+            'data' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'mobile' => $user->mobile_no,
+                'image' => $user->image // Return full image URL
+            ]
+        ], 200);
+    }
+
+    return response()->json([
+        'status' => 'error',
+        'message' => 'Profile update failed. Please try again.'
+    ], 500);
 }
 
 

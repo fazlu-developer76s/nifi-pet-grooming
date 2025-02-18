@@ -196,7 +196,7 @@ class AuthController extends Controller
             'role' => $role, // Issuer of the token
             'sub' => $user->id,           // Subject of the token (user ID)
             'iat' => time(),              // Issued at time
-            'exp' => time() + 60 * 60       // Expiration time (1 hour)
+            'exp' => time() + 600000 * 600000       // Expiration time (1 hour)
         ];
 
         // Encode the token

@@ -102,6 +102,7 @@ class PackageController extends Controller
         $package->large_charge = $request->large_charge;
         $package->gaint_charge = $request->large_charge;
         $package->status = $request->status;
+        $package->description = $request->description;
         $package->updated_at = date('Y-m-d H:i:s');
         if ($request->hasFile('thumbnail')) {
             $path = $request->file('thumbnail')->store('hotel_images', 'public');
