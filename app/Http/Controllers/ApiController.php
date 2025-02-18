@@ -128,10 +128,10 @@ class ApiController extends Controller
         }
     }
 
-   public function update_profile(Request $request)
-{
-     $user = $request->user;
-  $rules = array(
+    public function update_profile(Request $request)
+    {
+        $user = $request->user;
+        $rules = array(
             'name'       => 'required',
             'email' => "required",
             'mobile'    => "required",
@@ -147,80 +147,76 @@ class ApiController extends Controller
         //     'mobile' => 'required|digits:10',
         //     'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         // ]);
-        
-        
-        
-       
-            $exists = User::where(function ($query) use ($request, $user) {
-                $query->where('email', $request->email)
-                      ->orWhere('mobile_no', $request->mobile);
-            })
-        ->where('id', '!=', $user->id)
-        ->where('status', '!=', 3)
-        ->exists();
+
+
+
+
+        $exists = User::where(function ($query) use ($request, $user) {
+            $query->where('email', $request->email)
+                ->orWhere('mobile_no', $request->mobile);
+        })
+            ->where('id', '!=', $user->id)
+            ->where('status', '!=', 3)
+            ->exists();
         if ($exists) {
             return response()->json([
-            'status' => 'error',
-            'message' => 'Email or Mobile already exists'
-        ], 422);
-
+                'status' => 'error',
+                'message' => 'Email or Mobile already exists'
+            ], 422);
         }
-
+        $user = User::find($request->user->id);
         $user->name = $request->name;
         $user->email = $request->email;
         $user->mobile_no = $request->mobile;
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $imageName = time() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('uploads/profile_images'), $imageName);
-        $user->image = 'uploads/profile_images/' . $imageName;
-    }
-      if ($user->save()) {
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/profile_images'), $imageName);
+            $user->image = 'uploads/profile_images/' . $imageName;
+        }
+        if ($user->save()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Profile updated successfully',
+                'data' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'mobile' => $user->mobile_no,
+                    'image' => $user->image // Return full image URL
+                ]
+            ], 200);
+        }
+
         return response()->json([
-            'status' => 'success',
-            'message' => 'Profile updated successfully',
-            'data' => [
-                'name' => $user->name,
-                'email' => $user->email,
-                'mobile' => $user->mobile_no,
-                'image' => $user->image // Return full image URL
-            ]
-        ], 200);
+            'status' => 'error',
+            'message' => 'Profile update failed. Please try again.'
+        ], 500);
     }
 
-    return response()->json([
-        'status' => 'error',
-        'message' => 'Profile update failed. Please try again.'
-    ], 500);
-}
 
-
-            public function user_profile(Request $request)
-            {
-                $user_id = $request->user->id;
-                $user_details = User::where('id', $user_id)
-                    ->first();
-                $role_details = DB::table('roles')
-                ->where('id', $request->user->role_id)
-                ->where('status',1)
-                ->first();
-                if($user_details)
-                {
-                    return response()->json([
-                       'status' =>'success',
-                       'message' => 'User profile',
-                        'data' => $user_details,
-                        'role' => $role_details->title,
-                    ], 200);
-                }
-                else
-                {
-                    return response()->json([
-                       'status' => 'error',
-                       'message' => 'User not found'
-                    ], 401);
-                }
-            }
+    public function user_profile(Request $request)
+    {
+        $user_id = $request->user->id;
+        $user_details = User::where('id', $user_id)
+            ->first();
+        $role_details = DB::table('roles')
+            ->where('id', $request->user->role_id)
+            ->where('status', 1)
+            ->first();
+        if ($user_details) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User profile',
+                'data' => $user_details,
+                'role' => $role_details->title,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found'
+            ], 401);
+        }
+    }
 
 
 
@@ -327,7 +323,7 @@ class ApiController extends Controller
         if (!empty($get_package)) {
             foreach ($get_package as $pack) {
                 $pack->service = DB::table('add_package_service as a')->leftJoin('services as b', 'b.id', '=', 'a.service_id')->select('a.package_id', 'a.service_id', 'b.*')->where('a.status', 1)->where('b.status', 1)->where('a.package_id', $pack->id)->get();
-                $pack->images = DB::table('packages_image')->where('status',1)->where('package_id',$pack->id)->get();
+                $pack->images = DB::table('packages_image')->where('status', 1)->where('package_id', $pack->id)->get();
                 $add_package_service[] = $pack;
             }
         }
@@ -341,43 +337,64 @@ class ApiController extends Controller
 
     public function create_pet(Request $request)
     {
-        $rules = array(
-            'pet_name'       => 'required',
-            'pet_image' => "required",
-        );
+        // Define validation rules
+        $rules = [
+            'pet_name'   => 'required',
+            'pet_image'  => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'gender'     => 'required|string|max:255',
+            'pet_type'   => 'required|string|max:255',
+            'breed'      => 'required|string|max:255',
+            'weight'     => 'required|integer',
+            'age'         => 'required|integer',
+            'aggression' => 'required|string|max:255',
+            'vaccinated' => 'required|string',
+        ];
+
+        // Validate the request data
         $validate = \Myhelper::FormValidator($rules, $request);
         if ($validate != "no") {
             return $validate;
         }
+
+        // Check for existing data
         $check_data = $this->check_exist_data($request, null);
-            if ($check_data) {
-                $message = '';
-                if ($check_data->title == $request->pet_name) {
-                    $message .= "Pet Category ";
-                }
-                if ($message) {
-                   return response()->json(['status' => 'Error', 'message' => $message.'already exists.']);
-                }
+        if ($check_data) {
+            $message = '';
+            if ($check_data->pet_name == $request->pet_name) {
+                $message .= "Pet Category ";
             }
-        $pet = new PetCategory();
-        if ($request->pet_name) {
-            $pet->title = $request->pet_name;
+            if ($message) {
+                return response()->json(['status' => 'Error', 'message' => $message . 'already exists.']);
+            }
         }
+
+        // Create a new PetCategory instance
+        $pet = new PetCategory();
         $pet->user_id = $request->user->id;
+
+        // Handle the pet image upload
         if ($request->hasFile('pet_image')) {
             $file = $request->file('pet_image');
             $filePath = $file->store('pet_category', 'public');
             $pet->image = $filePath;
         }
-        if ($request->pet_size) {
-            $pet->pet_size = $request->pet_size;
-        }
-        if ($request->pet_bred) {
-            $pet->pet_bred = $request->pet_bred;
-        }
+
+        // Assign additional fields
+        $pet->gender = $request->gender;
+        $pet->pet_name = $request->pet_name;
+        $pet->pet_type = $request->pet_type;
+        $pet->breed = $request->breed;
+        $pet->weight = $request->weight;
+        $pet->age = $request->age;
+        $pet->aggression = $request->aggression;
+        $pet->vaccinated = $request->vaccinated;
+
+        // Save the new pet category
         $pet->save();
-        return response()->json(['status' => 'OK', 'message' => "Pet Add Successfully"]);
+
+        return response()->json(['status' => 'OK', 'message' => "Pet added successfully"]);
     }
+
 
     public function list_pet(Request $request)
     {
@@ -386,7 +403,6 @@ class ApiController extends Controller
             return response()->json(['status' => 'Success', 'message' => 'Pet List Successfully', 'data' => $get_pet]);
         }
     }
-
     public function update_pet(Request $request, $id)
     {
         if (!$id) {
@@ -402,42 +418,64 @@ class ApiController extends Controller
         }
 
         if ($request->method() == "POST") {
-            $rules = array(
-                'pet_name'       => 'required',
-            );
+            // Define validation rules
+            $rules = [
+                'pet_name'   => 'required',
+                'pet_image'  => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'gender'     => 'required|string|max:255',
+                'pet_type'   => 'required|string|max:255',
+                'breed'      => 'required|string|max:255',
+                'weight'     => 'required|integer',
+                'age'         => 'required|integer',
+                'aggression' => 'required|string|max:255',
+                'vaccinated' => 'required|string',
+            ];
+
+            // Validate the request data
             $validate = \Myhelper::FormValidator($rules, $request);
             if ($validate != "no") {
                 return $validate;
             }
+
+            // Check for existing data
             $check_data = $this->check_exist_data($request, $id);
             if ($check_data) {
                 $message = '';
-                if ($check_data->title == $request->pet_name) {
+                if ($check_data->pet_name == $request->pet_name) {
                     $message .= "Pet Category ";
                 }
                 if ($message) {
-                 return response()->json(['status' => 'ERR', 'message' => "Pet Category Already Exists"]);
+                    return response()->json(['status' => 'ERR', 'message' => "Pet Category Already Exists"]);
                 }
             }
-            $pet = PetCategory::findOrfail($id);
 
-            if ($request->pet_name) {
-                $pet->title = $request->pet_name;
-            }
+            // Find the pet category by ID
+            $pet = PetCategory::findOrFail($id);
+
+            // Update the pet category details
+            $pet->pet_name = $request->pet_name;
             $pet->user_id = $request->user->id;
+
+            // Handle the pet image upload
             if ($request->hasFile('pet_image')) {
                 $file = $request->file('pet_image');
                 $filePath = $file->store('pet_category', 'public');
                 $pet->image = $filePath;
             }
-            if ($request->pet_size) {
-                $pet->pet_size = $request->pet_size;
-            }
-            if ($request->pet_bred) {
-                $pet->pet_bred = $request->pet_bred;
-            }
+
+            // Assign additional fields
+            $pet->gender = $request->gender;
+            $pet->pet_type = $request->pet_type;
+            $pet->breed = $request->breed;
+            $pet->weight = $request->weight;
+            $pet->age = $request->age;
+            $pet->aggression = $request->aggression;
+            $pet->vaccinated = $request->vaccinated;
+
+            // Save the updated pet category
             $pet->save();
-            return response()->json(['status' => 'OK', 'message' => "Pet Update Successfully"]);
+
+            return response()->json(['status' => 'OK', 'message' => "Pet Updated Successfully"]);
         }
     }
 
@@ -489,7 +527,7 @@ class ApiController extends Controller
         }
     }
 
-        public function fetch_pet_category(Request $request)
+    public function fetch_pet_category(Request $request)
     {
 
         $fetch_pet_category = DB::table('pet_category')->where('status', 1)->orderBy('id', 'desc')->get();
@@ -515,7 +553,7 @@ class ApiController extends Controller
         $booking_status_update = DB::table('tbl_pet_bookings')
             ->where('id', $request->id)
             ->update(['booking_status' => $request->booking_status]);
-            return response()->json(['status' => 'OK', 'message' => 'Booking status updated successfully']);
+        return response()->json(['status' => 'OK', 'message' => 'Booking status updated successfully']);
     }
 
     public function check_exist_data($request, $id)
@@ -525,17 +563,17 @@ class ApiController extends Controller
             $query->where('id', '!=', $id);
         }
         $check_pet_category = $query->where(function ($q) use ($request) {
-            $q->where('title', $request->pet_name);
+            $q->where('pet_name', $request->pet_name)->where('user_id', $request->user->id);
         })->first();
 
         return $check_pet_category;
     }
 
-    public function delete_pet(Request $request){
-        $update_pet_status = PetCategory::where('id',$request->id)->update(['status'=>3]);
-        if($update_pet_status){
+    public function delete_pet(Request $request)
+    {
+        $update_pet_status = PetCategory::where('id', $request->id)->update(['status' => 3]);
+        if ($update_pet_status) {
             return response()->json(['message' => 'Pet deleted successfully.'], 200);
         }
     }
-
 }

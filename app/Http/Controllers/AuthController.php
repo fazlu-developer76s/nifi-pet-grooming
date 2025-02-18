@@ -69,7 +69,6 @@ class AuthController extends Controller
         ->where('a.status', 1)
         ->where('b.id','!=', 1)
         ->first();
-        dd($user);
         if ($user) {
             if ($otp = $this->userOTP($request->mobile_no)) {
                 $this->GenerateOTP($otp, $user->id);
@@ -427,7 +426,7 @@ class AuthController extends Controller
             ],
         ]);
         $referralCode = DB::table('referral_code')->where('code', $request->referral_code)->where('status',1)->first();
-        $get_user = User::find($referralCode->id)->where('status',1);
+        $get_user = DB::table('users')->where('id',$referralCode->id)->where('status',1)->first();
         $parent_id = $get_user->id;
         $user = User::where('email', $request->email)
             ->orWhere('mobile_no', $request->mobile_no)->where('status','!=',3)
