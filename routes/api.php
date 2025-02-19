@@ -44,11 +44,13 @@ Route::middleware(['jwt'])->group(function () {
     Route::post('user/get-services', [ApiController::class, 'get_services']);
     Route::post('user/get-packages', [ApiController::class, 'get_packages']);
     Route::post('user/create-pet', [ApiController::class, 'create_pet']);
-    Route::post('user/add-to-cart/{id}', [ApiController::class, 'add_to_cart']);
+    Route::post('user/add-to-cart/{id}/{price}', [ApiController::class, 'add_to_cart']);
     Route::get('user/get-cart-service', [ApiController::class, 'get_cart_services']);
     Route::delete('user/delete-cart-service/{id}', [ApiController::class, 'delete_cart_service']);
     Route::post('user/add-address', [ApiController::class, 'add_address']);
     Route::get('user/get-address', [ApiController::class, 'get_address']);
+    Route::get('user/get-current-location', [ApiController::class, 'get_location']);
+    Route::put('user/update-current-location', [ApiController::class, 'update_current_location']);
     Route::delete('user/delete-address/{id}', [ApiController::class, 'delete_address']);
 
     Route::match(['get', 'post'], 'user/update-pet/{id}', [ApiController::class, 'update_pet']);

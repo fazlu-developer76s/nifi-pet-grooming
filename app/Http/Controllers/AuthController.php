@@ -129,6 +129,13 @@ class AuthController extends Controller
                     ->first();
 
                 $token = $this->createJwtToken($user, $role_details->title);
+                $kyc_detail = [];
+                if($role_details->id == 3){
+                    $kyc_detail = DB::table('kyc_processes')->where('user_id', $user->id)->first();
+                    if(!$kyc_detail){
+                        DB::table('kyc_processes')->insert(['user_id' => $user->id]);
+                    }
+                }
                 if ($token) {
                     $this->ExpireToken($user->id);
                     $this->StoreToken($user->id, $token);
@@ -137,7 +144,8 @@ class AuthController extends Controller
                     'status' => "OK",
                     'token' => $token,
                     'user' => $user,
-                    'role' => $role_details->title
+                    'role' => $role_details->title,
+                    "kyc_detail" => $kyc_detail
                 ], 200);
             }
         }

@@ -589,38 +589,38 @@ class ApiController extends Controller
     {
         $update_pet_status = Pets::where('id', $request->id)->update(['status' => 3]);
         if ($update_pet_status) {
-            return response()->json(['message' => 'Pet deleted successfully.'], 200);
+            return response()->json(['status' => 'OK', 'message' => 'Pet deleted successfully.'], 200);
         }
     }
 
-    public function add_to_cart(Request $request, $id)
+    public function add_to_cart(Request $request, $id , $price)
     {
         $check_cart = DB::table('tbl_cart')->where('user_id', $request->user->id)->where('service_id', $id)->first();
         if ($check_cart) {
-            return response()->json(['message' => 'Service already added to cart.'], 200);
+            return response()->json(['status'=>'Exist','message' => 'Service already added to cart.'], 200);
         }
-        $add_cart = DB::table('tbl_cart')->insert(['user_id' => $request->user->id, 'service_id' => $id]);
+        $add_cart = DB::table('tbl_cart')->insert(['user_id' => $request->user->id,'price'=>$price, 'service_id' => $id]);
         if ($add_cart) {
-            return response()->json(['message' => 'Service added to cart successfully.'], 200);
+            return response()->json(['status' => 'OK', 'message' => 'Service added to cart successfully.'], 200);
         } else {
-            return response()->json(['message' => 'Failed to add service to cart.'], 500);
+            return response()->json(['status' => 'Error', 'message' => 'Failed to add service to cart.'], 500);
         }
     }
     public function get_cart_services(Request $request)
     {
         $cart_services = DB::table('tbl_cart as a')
             ->join('packages as b', 'a.service_id', '=', 'b.id')
-            ->select('b.*', 'a.id as cart_id')->where('b.status', 1)
+            ->select('b.*', 'a.id as cart_id','a.price as price')->where('b.status', 1)
             ->get();
-        return response()->json(['data' => $cart_services], 200);
+        return response()->json(['status' => 'OK','data' => $cart_services], 200);
     }
     public function delete_cart_service(Request $request, $id)
     {
         $delete_cart_service = DB::table('tbl_cart')->where('id', $id)->delete();
         if ($delete_cart_service) {
-            return response()->json(['message' => 'Service deleted from cart successfully.'], 200);
+            return response()->json(['status' => 'OK', 'message' => 'Service deleted from cart successfully.'], 200);
         } else {
-            return response()->json(['message' => 'Failed to delete service from cart.'], 500);
+            return response()->json(['status' => 'OK', 'message' => 'Failed to delete service from cart.'], 500);
         }
     }
 
@@ -651,16 +651,16 @@ class ApiController extends Controller
             'email_address'         => $request->email_address
         ]);
         if ($inserted) {
-            return response()->json(['message' => 'Address added successfully.'], 200);
+            return response()->json(['status' => 'OK', 'message' => 'Address added successfully.'], 200);
         } else {
-            return response()->json(['message' => 'Failed to add address.'], 500);
+            return response()->json(['status' => 'Error', 'message' => 'Failed to add address.'], 500);
         }
     }
 
     public function get_address(Request $request)
     {
         $addresses = DB::table('tbl_address')->where('status', 1)->get();
-        return response()->json(['data' => $addresses], 200);
+        return response()->json(['status' => 'OK', 'data' => $addresses], 200);
     }
 
     public function delete_address(Request $request, $id)
@@ -668,9 +668,62 @@ class ApiController extends Controller
         $deleted = DB::table('tbl_address')->where('id', $id)->delete();
 
         if ($deleted) {
-            return response()->json(['message' => 'Address deleted successfully.'], 200);
+            return response()->json(['status' => 'OK', 'message' => 'Address deleted successfully.'], 200);
         } else {
-            return response()->json(['message' => 'Failed to delete address.'], 500);
+            return response()->json(['status' => 'Error', 'message' => 'Failed to delete address.'], 500);
         }
     }
+
+    public function get_location(Request $request){
+        $rules = [
+            'lat'         => 'required|string',
+            'long'  => 'required|string'
+        ];
+        $validate = \Myhelper::FormValidator($rules, $request);
+        if ($validate != "no") {
+            return $validate;
+        }
+        $apiKey = '9d52cf15543e4b1d9517f51ba60e6961';
+        $url = "https://api.opencagedata.com/geocode/v1/json?q={$request->lat}+{$request->long}&key={$apiKey}";
+        $response = file_get_contents($url);
+        $responseData = json_decode($response, true);
+        if (!empty($responseData['results'])) {
+            $location = $responseData['results'][0]['formatted'];
+            return response()->json(['status' => 'OK', 'data' => $responseData], 200);
+        } else {
+            return response()->json(['status' => 'Error', 'data' => 'Location not found.'], 404);
+        }
+    }
+
+    public function update_current_location(Request $request)
+    {
+        $user = User::findOrFail($request->user->id);
+        if (!empty($request->lat) && !empty($request->long)) {
+            $apiKey = '9d52cf15543e4b1d9517f51ba60e6961';
+            $url = "https://api.opencagedata.com/geocode/v1/json?q={$request->lat}+{$request->long}&key={$apiKey}";
+            $response = file_get_contents($url);
+            $responseData = json_decode($response, true);
+
+            if (!empty($responseData['results'])) {
+                $addressComponents = $responseData['results'][0]['components'];
+                $user->_normalized_city = $addressComponents['city'] ?? null;
+                $user->_category = $addressComponents['_category'] ?? 'road';
+                $user->_type = $addressComponents['_type'] ?? 'road';
+                $user->continent = $addressComponents['continent'] ?? null;
+                $user->country = $addressComponents['country'] ?? null;
+                $user->country_code = $addressComponents['country_code'] ?? null;
+                $user->county = $addressComponents['county'] ?? null;
+                $user->postcode = $addressComponents['postcode'] ?? null;
+                $user->road = $addressComponents['road'] ?? 'unnamed road';
+                $user->road_type = $addressComponents['road_type'] ?? 'residential';
+                $user->state = $addressComponents['state'] ?? null;
+                $user->state_code = $addressComponents['state_code'] ?? null;
+                $user->state_district = $addressComponents['state_district'] ?? null;
+                $user->suburb = $addressComponents['suburb'] ?? null;
+            }
+        }
+        $user->save();
+        return response()->json(['status' => 'OK', 'message' => 'Profile updated successfully'], 200);
+    }
+
 }
