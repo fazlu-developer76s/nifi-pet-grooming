@@ -13,6 +13,7 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PaymentModeController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ReferController;
 
 Route::get('/', function () {
@@ -100,6 +101,10 @@ Route::middleware(['auth', 'checkRole'])->group(function () {
     Route::delete('/package/delete/{id}', [PackageController::class, 'destroy'])->name('package.destroy');
     Route::post('/package/delete-sub-image', [PackageController::class, 'delete_image'])->name('delete.image');
 
+    // Pages
+    Route::get('pages/{id}/edit', [PagesController::class, 'edit'])->name('pages.edit');
+    Route::post('pages/{id}', [PagesController::class, 'update'])->name('pages.update');
+
     // Refer And Earn Setup Route
     Route::get('/refer', [ReferController::class, 'index'])->name('refer');
     Route::match(['get', 'post'], '/refer/create', [ReferController::class, 'create'])->name('refer.create');
@@ -121,3 +126,4 @@ Route::middleware(['auth', 'checkRole'])->group(function () {
     Route::get('company/{id}/edit', [CompanyController::class, 'edit'])->name('company.edit');
     Route::post('company/{id}', [CompanyController::class, 'update'])->name('company.update');
 });
+

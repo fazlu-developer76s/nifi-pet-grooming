@@ -52,6 +52,7 @@ Route::middleware(['jwt'])->group(function () {
     Route::get('user/get-current-location', [ApiController::class, 'get_location']);
     Route::put('user/update-current-location', [ApiController::class, 'update_current_location']);
     Route::delete('user/delete-address/{id}', [ApiController::class, 'delete_address']);
+    Route::get('user/pages/{title}',[ApiController::class, 'get_pages']);
 
     Route::match(['get', 'post'], 'user/update-pet/{id}', [ApiController::class, 'update_pet']);
     Route::delete('user/delete-pet', [ApiController::class, 'delete_pet']);

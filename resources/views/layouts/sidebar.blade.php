@@ -169,6 +169,24 @@
                 </div>
             </div>
             <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
+                <div class="menu-icon"> <i class="fas fa-list"></i> </div>
+                <div class="menu-text">Manage Pages</div>
+                <div class="menu-caret"></div>
+            </a>
+            <div class="menu-submenu">
+                <div class="menu-item">
+                    <a href="{{ route('pages.edit', 1) }}" class="menu-link ">
+                        <div class="menu-text">Term & Condition</div>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="{{ route('pages.edit', 2) }}" class="menu-link ">
+                        <div class="menu-text">Privacy Policy</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+            <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
                     <div class="menu-icon"> <i class="fas fa-list"></i> </div>
                     <div class="menu-text">Site Setting</div>
                     <div class="menu-caret"></div>

@@ -39,9 +39,9 @@
                                         <th class="text-nowrap">Name </th>
                                         <th class="text-nowrap">Email</th>
                                         <th class="text-nowrap">Mobile No.</th>
-                                        <th class="text-nowrap">Aadhar No.</th>
+                                        {{-- <th class="text-nowrap">Aadhar No.</th> --}}
                                         <th class="text-nowrap">Role</th>
-                                        <th class="text-nowrap">Type</th>
+                                        {{-- <th class="text-nowrap">Type</th> --}}
                                         <th class="text-nowrap">Created Date</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-nowrap">Action</th>
@@ -55,9 +55,9 @@
                                         <td>{{ $member->name }}</td>
                                         <td>{{ $member->email }}</td>
                                         <td>{{ $member->mobile_no }}</td>
-                                        <td>{{ $member->aadhar_no }}</td>
+                                        {{-- <td>{{ $member->aadhar_no }}</td> --}}
                                         <td>{{ $member->title }}</td>
-                                        <td>{{ $member->employe_type }}</td>
+                                        {{-- <td>{{ $member->employe_type }}</td> --}}
                                         <td>{{ \Carbon\Carbon::parse($member->created_at)->format('d F Y h:i A') }}</td>
                                         <td>
                                             <div class="form-check form-switch">

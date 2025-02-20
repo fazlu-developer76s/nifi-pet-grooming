@@ -17,7 +17,7 @@ class MemberController extends Controller
     {
 
         $title = "Member List";
-        $allmember = DB::table('users')->leftJoin('roles', 'roles.id', '=', 'users.role_id')->where('users.role_id', 2)->where('users.status', '!=', 3)->select('users.*', 'roles.title')->get();
+        $allmember = DB::table('users')->leftJoin('roles', 'roles.id', '=', 'users.role_id')->where('users.role_id', '!=' ,  1)->where('users.status', '!=', 3)->select('users.*', 'roles.title')->get();
         return view('member.index', compact('title', 'allmember'));
     }
 
@@ -31,6 +31,7 @@ class MemberController extends Controller
             ->join('roles', 'roles.id', '=', 'users.role_id')
             ->where('users.status', 1)
             ->where('roles.status', 1)
+            ->where('users.role_id',3)
             ->select(
                 'users.name as user_name',
                 'users.email as email',
@@ -88,10 +89,10 @@ class MemberController extends Controller
                     'required',
                     'regex:/^[6-9]\d{9}$/'
                 ],
-                'aadhar_no' => [
-                    'required',
-                    'regex:/^\d{12}$/'
-                ],
+                // 'aadhar_no' => [
+                //     'required',
+                //     'regex:/^\d{12}$/'
+                // ],
                 'status' => 'required',
                 'password' => [
                     'required',
@@ -119,8 +120,8 @@ class MemberController extends Controller
             $member->role_id = $request->role_id;
             $member->email = $request->email;
             $member->mobile_no = $request->mobile_no;
-            $member->employe_type = $request->employe_type;
-            $member->aadhar_no = $request->aadhar_no;
+            // $member->employe_type = $request->employe_type;
+            // $member->aadhar_no = $request->aadhar_no;
             $member->status = $request->status;
             $member->password = Hash::make($request->password);
             $member->save();
@@ -165,10 +166,10 @@ class MemberController extends Controller
                 'required',
                 'regex:/^[6-9]\d{9}$/'
             ],
-            'aadhar_no' => [
-                'required',
-                'regex:/^\d{12}$/'
-            ],
+            // 'aadhar_no' => [
+            //     'required',
+            //     'regex:/^\d{12}$/'
+            // ],
             'status' => 'required',
         ]);
 
@@ -202,8 +203,8 @@ class MemberController extends Controller
         $member->role_id = $request->role_id;
         $member->email = $request->email;
         $member->mobile_no = $request->mobile_no;
-        $member->employe_type = $request->employe_type;
-        $member->aadhar_no = $request->aadhar_no;
+        // $member->employe_type = $request->employe_type;
+        // $member->aadhar_no = $request->aadhar_no;
         $member->status = $request->status;
         $member->save(); // Use save() to persist the changes
 
@@ -230,8 +231,8 @@ class MemberController extends Controller
         }
         $check_member = $query->where(function ($q) use ($request) {
             $q->where('email', $request->email)
-                ->orWhere('mobile_no', $request->mobile_no)
-                ->orWhere('aadhar_no', $request->aadhar_no);
+                ->orWhere('mobile_no', $request->mobile_no);
+                // ->orWhere('aadhar_no', $request->aadhar_no);
         })->first();
 
         return $check_member;

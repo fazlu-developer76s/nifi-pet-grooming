@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kycprocess;
 use App\Models\Package;
+use App\Models\Page;
 use App\Models\Pets;
 use App\Models\Service;
 use App\Models\User;
@@ -597,6 +598,9 @@ class ApiController extends Controller
     {
         $check_cart = DB::table('tbl_cart')->where('user_id', $request->user->id)->where('service_id', $id)->first();
         if ($check_cart) {
+            $add_cart = DB::table('tbl_cart')
+            ->where('id', $check_cart->id)
+            ->update(['price' => $price]);
             return response()->json(['status'=>'Exist','message' => 'Service already added to cart.'], 200);
         }
         $add_cart = DB::table('tbl_cart')->insert(['user_id' => $request->user->id,'price'=>$price, 'service_id' => $id]);
@@ -724,6 +728,15 @@ class ApiController extends Controller
         }
         $user->save();
         return response()->json(['status' => 'OK', 'message' => 'Profile updated successfully'], 200);
+    }
+
+    public function get_pages(Request $request , $title){
+        $page = Page::where('page_name', $title)->first();
+        if($page){
+            return response()->json(['status' => 'OK', 'data' => $page], 200);
+        }else{
+            return response()->json(['status' => 'Error', 'data' => 'Page not found.'], 404);
+        }
     }
 
 }
