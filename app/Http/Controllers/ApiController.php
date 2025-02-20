@@ -603,7 +603,7 @@ class ApiController extends Controller
         if ($add_cart) {
             return response()->json(['status' => 'OK', 'message' => 'Service added to cart successfully.'], 200);
         } else {
-            return response()->json(['status' => 'Error', 'message' => 'Failed to add service to cart.'], 500);
+            return response()->json(['status' => 'Error', 'message' => 'Failed to add service to cart.'], 501);
         }
     }
     public function get_cart_services(Request $request)
