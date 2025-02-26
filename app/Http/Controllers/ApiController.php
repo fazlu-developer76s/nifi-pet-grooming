@@ -23,48 +23,65 @@ class ApiController extends Controller
         if ($validate != "no") {
             return $validate;
         }
-        $aes_key = "3c8cdd3e3028795dacf67ef25a89509a989768b067a7b591cc468954ad4e1620";
-        $aes_iv = "ec5bad40b2162069";
+        // encrypt
         $user_data = array(
-            'p1' => "Advance",
-            "p2" => $post->register_aadhar,
-            "p3" => "sdfgs6848"
+            "p1" => $post->register_aadhar,
+            "p2" => rand(0000000000,9999999999)
         );
-        $encrypt_data = \Myhelper::newEncrypt(json_encode($user_data), $aes_key, $aes_iv);
+        $urls = "https://api.nifipayments.com/api/user/encrypt";
+        $headers = [
+            "Accept: application/json",
+            "Content-Type: application/json",
+            "x-api-iv: 58e45c94e3c0707abbe7ae9f12f4fff2",
+            "x-api-key: d1ef40c68da4df29e4a28df898c13b636748f6c56d3290027cf5946ca06f794a"
+        ];
+        $encrypt_data = \Myhelper::curl($urls, "POST", json_encode($user_data), $headers, "yes", "report");
+        // encrypt
         $aadharRecord = \DB::table("kycdatas")->where("type", "aadhar")->where('number', $post->register_aadhar)->first();
         if (!$aadharRecord) {
-            $url = "http://192.168.0.181:8000/api/v1/validate/aadhar";
+            $url = "https://api.nifipayments.com/api/v1/validate/aadhar/advance";
             $header = array(
                 'Accept: application/json',
                 'Content-Type: application/json',
-                'client_id: 98dfe4dbc68bb6948a85137927f857e0',
-                'x-api-key: 596e6fc87495e86afb31437b866cce1e00a1248169a90f0fa8eefc230a0b7af4',
+                'x-client-id: e26c92f1fb5a0b937a125b4797c8e42d',
+                'x-api-key: 9efb1d0446137c4be81c06ddad6de420041000e0acd4baeaf03bfe624d7dbd0e',
             );
-            $parameter['body'] = $encrypt_data;
+            $parameter['body'] = json_decode($encrypt_data['response'])->body;
             $result = \Myhelper::curl($url, "POST", json_encode($parameter), $header, "yes", "report", $post->register_aadhar);
-            $dec_res = json_decode($result['response']);
-            $decrypt_data = \Myhelper::newDecrypt($dec_res->body, $aes_key, $aes_iv);
+
+            // decrypt
+            $urls1 = "https://api.nifipayments.com/api/user/decryptReq";
+            $user_data1 = array(
+                "body" => json_decode($result['response'])->body
+            );
+            $decrypt_data = \Myhelper::curl($urls1, "POST", json_encode($user_data1), $headers, "yes", "report");
+            // decrypt
+
             if ($decrypt_data != "") {
-                $response = json_decode($decrypt_data);
-                if (isset($response->data->data->otp_sent) && $response->data->data->otp_sent === true) {
-                    return response()->json(['status' => 'TXNOTP', 'message' => "Aadhar verify successfully", "client_id" => $response->data->transaction_id]);
+                $response = json_decode($decrypt_data['response'])->body;
+                $response1 =json_decode($response);
+                if (isset($response1->data->data->otp_sent) && $response1->data->data->otp_sent === true) {
+                    return response()->json(['status' => 'TXNOTP', 'message' => "Aadhar verify successfully", "client_id" => $response1->data->transaction_id]);
                 } else {
-                    return response()->json(['status' => 'ERR', 'message' => isset($response->message) ? $response->message : "Please contact your administrator"]);
+                    return response()->json(['status' => 'ERR', 'message' => isset($response1->message) ? $response1->message : "Please contact your administrator"]);
                 }
             } else {
                 return response()->json(['status' => 'ERR', 'message' => "Please contact your administrator"]);
             }
-        } else {
+        }
+         else {
             $response = json_decode($aadharRecord->response);
             return response()->json([
-                'status'  => 'TXN',
-                'message' => "Aadhar re-verified successfully",
-                "profile" => "data:image/png;base64, " . $response->profile_image,
-                "mobile"  => $aadharRecord->mobile,
-                'state'   => $response->address->state,
-                'pincode' => $response->zip,
-                'city'    => $response->address->po,
-                'address' => $response->address->house . " " . $response->address->street . " " . $response->address->loc
+                'status'  => 'success',
+                'message' => "Aadhar verified successfully",
+                "response" => $aadharRecord->response
+                // 'message' => "Aadhar re-verified successfully",
+                // "profile" => "data:image/png;base64, " . $response->profile_image,
+                // "mobile"  => $aadharRecord->mobile,
+                // 'state'   => $response->address->state,
+                // 'pincode' => $response->zip,
+                // 'city'    => $response->address->po,
+                // 'address' => $response->address->house . " " . $response->address->street . " " . $response->address->loc
             ]);
         }
     }
@@ -74,55 +91,75 @@ class ApiController extends Controller
         $rules = array(
             'otp'       => 'required',
             'client_id' => "required",
-            'mobile'    => "required"
+            // 'mobile'    => "required"
         );
         $validate = \Myhelper::FormValidator($rules, $post);
         if ($validate != "no") {
             return $validate;
         }
-        $aes_key = "3c8cdd3e3028795dacf67ef25a89509a989768b067a7b591cc468954ad4e1620";
-        $aes_iv = "ec5bad40b2162069";
+
+        // encrypt
         $user_data = array(
-            'p1' => "Advance",
-            "p2" => $post->otp,
-            "p3" => $post->client_id
+        "p1" => $post->client_id,
+        "p2" => $post->otp
         );
-        $encrypt_data = \Myhelper::newEncrypt(json_encode($user_data), $aes_key, $aes_iv);
-        $url = "http://192.168.0.181:8000/api/v1/validate/otp-submit";
+        $urls = "https://api.nifipayments.com/api/user/encrypt";
+        $headers = [
+            "Accept: application/json",
+            "Content-Type: application/json",
+            "x-api-iv: 58e45c94e3c0707abbe7ae9f12f4fff2",
+            "x-api-key: d1ef40c68da4df29e4a28df898c13b636748f6c56d3290027cf5946ca06f794a"
+        ];
+        $encrypt_data = \Myhelper::curl($urls, "POST", json_encode($user_data), $headers, "yes", "report");
+
+        // encrypt
+        $url = "https://api.nifipayments.com/api/v1/validate/otp-submit/advance";
         $header = array(
             'Accept: application/json',
             'Content-Type: application/json',
-            'client_id: 98dfe4dbc68bb6948a85137927f857e0',
-            'x-api-key: 596e6fc87495e86afb31437b866cce1e00a1248169a90f0fa8eefc230a0b7af4',
+            'x-client-id: e26c92f1fb5a0b937a125b4797c8e42d',
+            'x-api-key: 9efb1d0446137c4be81c06ddad6de420041000e0acd4baeaf03bfe624d7dbd0e',
         );
-        $parameter['body'] = $encrypt_data;
-        $result = \Myhelper::curl($url, "POST", json_encode($parameter), $header, "yes", "report", $post->mobile);
-        $dec_res = json_decode($result['response']);
-        $decrypt_data = \Myhelper::newDecrypt($dec_res->body, $aes_key, $aes_iv);
+
+        $parameter['body'] = json_decode($encrypt_data['response'])->body;
+        $result = \Myhelper::curl($url, "POST", json_encode($parameter), $header, "yes", "report");
+
+        // decrypt
+        $urls1 = "https://api.nifipayments.com/api/user/decryptReq";
+        $user_data1 = array(
+            "body" => json_decode($result['response'])->body
+        );
+        $decrypt_data = \Myhelper::curl($urls1, "POST", json_encode($user_data1), $headers, "yes", "report");
+        // decrypt
         if ($decrypt_data != "") {
-            $response = json_decode($decrypt_data);
-            if (isset($response->status) && $response->status === true) {
+            $response = json_decode($decrypt_data['response'])->body;
+            $response1 =json_decode($response);
+            if (isset($response1->status) && $response1->status === 'success') {
+
                 \DB::table("kycdatas")->insert([
                     "type"   => "aadhar",
-                    "name"   => $response->data->data->full_name,
-                    "number" => $response->data->data->aadhaar_number,
+                    "name"   => $response1->data->full_name,
+                    "number" => $response1->data->aadhaar_number,
                     "mobile" => $post->mobile,
                     "state"  => $post->client_id,
-                    "response" => json_encode($response->data),
+                    "response" => json_encode($response1->data),
                     'user_id' => \Auth::id()
                 ]);
                 return response()->json([
-                    'status'  => 'TXN',
+                    'status'  => 'success',
                     'message' => "Aadhar verified successfully",
-                    "profile" => "data:image/png;base64, " . $response->data->data->profile_image,
-                    "mobile"  => $post->mobile,
-                    'state'   => $response->data->data->address->state,
-                    'pincode' => $response->data->data->zip,
-                    'city'    => $response->data->data->address->po,
-                    'address' => $response->data->data->address->house . " " . $response->data->data->address->street . " " . $response->data->data->address->landmark . " " . $response->data->data->address->loc
+                    // "profile" => "data:image/png;base64, " . $response1->data->profile_image,
+                    // "mobile"  => $post->mobile,
+                    // "number" => $response1->data->aadhaar_number,
+                    // "name"   => $response1->data->full_name,
+                    // 'state'   => $response1->data->address->state,
+                    // 'pincode' => $response1->data->zip,
+                    // 'city'    => $response1->data->address->po,
+                    // 'address' => $response1->data->address->house . " " . $response1->data->address->street . " " . $response1->data->address->landmark . " " . $response1->data->address->loc,
+                    "response" => json_encode($response1->data)
                 ]);
             } else {
-                return response()->json(['status' => 'ERR', 'message' => isset($response->message) ? $response->message : "Please contact your administrator"]);
+                return response()->json(['status' => 'ERR', 'message' => isset($response1->message) ? $response1->message : "Please contact your administrator"]);
             }
         } else {
             return response()->json(['status' => 'ERR', 'message' => "Please contact your administrator"]);
@@ -219,11 +256,28 @@ class ApiController extends Controller
         }
     }
 
+    public function get_kyc(Request $request){
+        $user_id = $request->user->id;
+        $kyc_details = Kycprocess::where('user_id', $user_id)->first();
+        // $kyc_details = DB::table('kycdatas')->where('user_id', $user_id)->first();
+        if ($kyc_details) {
+            return response()->json([
+               'status' =>'success',
+               'message' => 'KYC details',
+                'data' => $kyc_details
+            ], 200);
+        } else {
+            return response()->json([
+               'status' => 'error',
+               'message' => 'KYC details not found'
+            ], 401);
+        }
+    }
+
 
 
     public function update_kyc(Request $request)
     {
-
 
         $user = $request->user;
         $user_id = $user->id;
@@ -233,6 +287,31 @@ class ApiController extends Controller
             $user_update->kyc_status = 1;
             $user_update->user_id = $user_id;
         }
+        if ($request->name) {
+            $user_update->name = $request->name;
+        }
+
+        if ($request->mobile_no) {
+            $user_update->mobile_no = $request->mobile_no;
+        }
+
+        if ($request->email) {
+            $user_update->email = $request->email;
+        }
+
+        if ($request->date_of_birth) {
+            $user_update->date_of_birth = $request->date_of_birth;
+        }
+
+        if ($request->gender) {
+            $user_update->gender = $request->gender;
+        }
+
+        if ($request->is_personal_verified) {
+            $user_update->is_personal_verified = $request->is_personal_verified;
+        }
+
+
         if ($request->aadhar_no) {
             $user_update->aadhar_no = $request->aadhar_no;
         }
@@ -293,15 +372,63 @@ class ApiController extends Controller
         if ($request->is_bank_verified) {
             $user_update->is_bank_verified = $request->is_bank_verified;
         }
+
+
+        if (!empty($request->lat) && !empty($request->long)) {
+            $apiKey = '9d52cf15543e4b1d9517f51ba60e6961';
+            $url = "https://api.opencagedata.com/geocode/v1/json?q={$request->lat}+{$request->long}&key={$apiKey}";
+            $response = file_get_contents($url);
+            $responseData = json_decode($response, true);
+
+            if (!empty($responseData['results'])) {
+                $addressComponents = $responseData['results'][0]['components'];
+                $user_update->normalized_city = $addressComponents['city'] ?? null;
+                $user_update->category = $addressComponents['_category'] ?? 'road';
+                $user_update->type = $addressComponents['_type'] ?? 'road';
+                $user_update->continent = $addressComponents['continent'] ?? null;
+                $user_update->country = $addressComponents['country'] ?? null;
+                $user_update->country_code = $addressComponents['country_code'] ?? null;
+                $user_update->county = $addressComponents['county'] ?? null;
+                $user_update->postcode = $addressComponents['postcode'] ?? null;
+                $user_update->road = $addressComponents['road'] ?? 'unnamed road';
+                $user_update->road_type = $addressComponents['road_type'] ?? 'residential';
+                $user_update->state = $addressComponents['state'] ?? null;
+                $user_update->state_code = $addressComponents['state_code'] ?? null;
+                $user_update->state_district = $addressComponents['state_district'] ?? null;
+                $user_update->suburb = $addressComponents['suburb'] ?? null;
+            }
+        }
+        if ($request->is_current_location_verified) {
+            $user_update->is_current_location_verified = $request->is_current_location_verified;
+        }
+
+        if ($request->hasFile('equipment_image')) {
+            $file = $request->file('equipment_image');
+            $filePath = $file->store('kyc', 'public');
+            $user_update->equipment_image = $filePath;
+        }
+        if ($request->is_equipment_verified) {
+            $user_update->is_equipment_verified = $request->is_equipment_verified;
+        }
+
         if ($request->hasFile('live_photo')) {
             $file = $request->file('live_photo');
             $filePath = $file->store('kyc', 'public');
             $user_update->live_photo = $filePath;
         }
+        if ($request->is_live_photo_verified) {
+            $user_update->is_live_photo_verified = $request->is_live_photo_verified;
+        }
         if ($request->hasFile('live_video')) {
             $file = $request->file('live_video');
             $filePath = $file->store('kyc', 'public');
             $user_update->live_video = $filePath;
+        }
+        if ($request->is_live_video_verified) {
+            $user_update->is_live_video_verified = $request->is_live_video_verified;
+        }
+        if ($request->step) {
+            $user_update->step = $request->step;
         }
         $user_update->save();
         return response()->json(['status' => 'OK', 'message' => "KYC updated successfully"]);
@@ -346,7 +473,7 @@ class ApiController extends Controller
             'pet_type'   => 'required|string|max:255',
             'breed'      => 'required|string|max:255',
             'weight'     => 'required|integer',
-            'age'         => 'required|integer',
+            'age'         => 'required',
             'aggression' => 'required|string|max:255',
             'vaccinated' => 'required|string',
         ];
@@ -487,6 +614,9 @@ class ApiController extends Controller
             'address_id'       => 'required',
             'booking_date'       => 'required',
             'booking_time'       => 'required',
+            'booking_amount'       => 'required',
+            'tax_amount'       => 'required',
+            'total_amount'       => 'required',
         );
         $validate = \Myhelper::FormValidator($rules, $request);
         if ($validate != "no") {
@@ -497,11 +627,17 @@ class ApiController extends Controller
         $booking_date = $request->booking_date;
         $booking_time = $request->booking_time;
         $description  = $request->description;
+        $booking_amount  = $request->booking_amount;
+        $tax_amount  = $request->tax_amount;
+        $total_amount  = $request->total_amount;
         $get_address  = DB::table('tbl_address')->where('status', 1)->where('id', $address_id)->where('user_id', $request->user->id)->first();
         $insert_booking = DB::table('tbl_pet_bookings')->insert([
             'package_id' => $package_id,
             'booking_date' => $booking_date,
             'booking_time' => $booking_time,
+            'booking_amount' => $booking_amount,
+            'tax_amount' => $tax_amount,
+            'total_amount' => $total_amount,
             'description' => $description,
             'customer_id' => $request->user->id,
             'flat_house_no'         => $get_address->flat_house_no,
@@ -594,16 +730,16 @@ class ApiController extends Controller
         }
     }
 
-    public function add_to_cart(Request $request, $id , $price)
+    public function add_to_cart(Request $request, $id, $price)
     {
         $check_cart = DB::table('tbl_cart')->where('user_id', $request->user->id)->where('service_id', $id)->first();
         if ($check_cart) {
             $add_cart = DB::table('tbl_cart')
-            ->where('id', $check_cart->id)
-            ->update(['price' => $price]);
-            return response()->json(['status'=>'Exist','message' => 'Service already added to cart.'], 200);
+                ->where('id', $check_cart->id)
+                ->update(['price' => $price]);
+            return response()->json(['status' => 'Exist', 'message' => 'Service already added to cart.'], 200);
         }
-        $add_cart = DB::table('tbl_cart')->insert(['user_id' => $request->user->id,'price'=>$price, 'service_id' => $id]);
+        $add_cart = DB::table('tbl_cart')->insert(['user_id' => $request->user->id, 'price' => $price, 'service_id' => $id]);
         if ($add_cart) {
             return response()->json(['status' => 'OK', 'message' => 'Service added to cart successfully.'], 200);
         } else {
@@ -614,9 +750,9 @@ class ApiController extends Controller
     {
         $cart_services = DB::table('tbl_cart as a')
             ->join('packages as b', 'a.service_id', '=', 'b.id')
-            ->select('b.*', 'a.id as cart_id','a.price as price')->where('b.status', 1)
+            ->select('b.*', 'a.id as cart_id', 'a.price as price')->where('b.status', 1)
             ->get();
-        return response()->json(['status' => 'OK','data' => $cart_services], 200);
+        return response()->json(['status' => 'OK', 'data' => $cart_services], 200);
     }
     public function delete_cart_service(Request $request, $id)
     {
@@ -678,7 +814,8 @@ class ApiController extends Controller
         }
     }
 
-    public function get_location(Request $request){
+    public function get_location(Request $request)
+    {
         $rules = [
             'lat'         => 'required|string',
             'long'  => 'required|string'
@@ -730,13 +867,13 @@ class ApiController extends Controller
         return response()->json(['status' => 'OK', 'message' => 'Profile updated successfully'], 200);
     }
 
-    public function get_pages(Request $request , $title){
+    public function get_pages(Request $request, $title)
+    {
         $page = Page::where('page_name', $title)->first();
-        if($page){
+        if ($page) {
             return response()->json(['status' => 'OK', 'data' => $page], 200);
-        }else{
+        } else {
             return response()->json(['status' => 'Error', 'data' => 'Page not found.'], 404);
         }
     }
-
 }

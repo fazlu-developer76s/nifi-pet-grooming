@@ -37,6 +37,8 @@ Route::middleware(['jwt'])->group(function () {
     Route::post('user/get-aadhar-otp',[ApiController::class, 'get_aadhar_otp']);
     Route::post('user/check-aadhar-otp',[ApiController::class, 'checkaadharotp']);
     Route::post('user/update-kyc',[ApiController::class, 'update_kyc']);
+    Route::get('user/get-kyc',[ApiController::class, 'get_kyc']);
+    Route::post('user/get-kyc',[ApiController::class, 'get_kyc']);
     Route::post('user/update-profile-user',[ApiController::class, 'update_profile']);
     Route::get('user/get-user-profile', [ApiController::class, 'user_profile']);
     Route::post('user/referal', [AuthController::class, 'referal']);
