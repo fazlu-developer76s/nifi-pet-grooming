@@ -265,6 +265,19 @@ class Global_helper
       return  DB::table('dynamic_url')->where('status',1)->get();
     }
 
+    public static function SaveNotification($package_id,$user_id,$type,$subject='',$description='',){
+        $insert_notification = DB::table('tbl_notification')->insert([
+            'booking_id' => $package_id,
+            'user_id' => $user_id,
+            'type' => $type,
+            'subject' => $subject,
+            'description' => $description
+        ]);
+        if($insert_notification){
+            return true;
+        }
+    }
+
     public static function companyDetails()
     {
         return Company::where('status',1)->first();

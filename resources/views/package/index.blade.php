@@ -158,6 +158,15 @@
                                             @enderror
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label">Tax (In Percentage)</label>
+                                            <input class="form-control @error('tax') is-invalid @enderror" type="text" name="tax" placeholder="Enter Tax In Percentage" value="@if(empty($get_package[0])) {{ old('tax') }} @else {{ (isset($get_package[0])) ? $get_package[0]->tax : '' ; }} @endif" />
+                                            @error('tax')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer bg-none d-flex p-3">
@@ -183,6 +192,7 @@
                                         <th class="text-nowrap">Small Breed</th>
                                         <th class="text-nowrap">Large Breed</th>
                                         <th class="text-nowrap">Gaint Breed</th>
+                                        <th class="text-nowrap">Tax</th>
                                         <th class="text-nowrap">Created Date</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-nowrap">Action</th>
@@ -197,6 +207,7 @@
                                         <td>{{ $package->small_charge }}</td>
                                         <td>{{ $package->large_charge }}</td>
                                         <td>{{ $package->gaint_charge }}</td>
+                                        <td>{{ $package->tax }}%</td>
                                         <td>{{ \Carbon\Carbon::parse($package->created_at)->format('d F Y h:i A') }}</td>
                                         <td>
                                             <div class="form-check form-switch">

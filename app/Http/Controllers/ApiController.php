@@ -11,12 +11,15 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\Global_helper as GlobalHelper;
+
 
 class ApiController extends Controller
 {
     public function get_aadhar_otp(Request $post)
     {
-        return response()->json(['status' => 'TXNOTP', 'message' => "Aadhar verify successfully","client_id"=>"6783597812"]);
+
+        return response()->json(['status' => 'TXNOTP', 'message' => "Aadhar verify successfully","client_id"=>6783597812]);
 
 
         $rules = array(
@@ -91,7 +94,7 @@ class ApiController extends Controller
 
     public function checkaadharotp(Request $post)
     {
-        return response()->json(['status' => 'success', 'Aadhar verified successfully' => "Please contact your administrator" ,"response"=> "{\"client_id\":\"aadhaar_v2_yroDkhCAOkRCbAxjbcjr\",\"full_name\":\"Rajbir Singh\",\"aadhaar_number\":\"XXXXXXXX9175\",\"dob\":\"2002-11-18\",\"gender\":\"M\",\"address\":{\"country\":\"India\",\"dist\":\"Amritsar\",\"state\":\"Punjab\",\"po\":\"Amritsar G.P.O\",\"loc\":\"Block -E, Pyramid City\",\"vtc\":\"Amritsar -I\",\"subdist\":\"Amritsar\",\"street\":\"Sultanwind Link Road\",\"house\":\"2\",\"landmark\":\"Near Golden Gate\"},\"face_status\":false,\"face_score\":-1,\"zip\":\"143001\",\"profile_image\":\"\\/9j\\/4AAQSkZJRgABAgAAAQABAAD\\/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL\\/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL\\/wAARCADIAKADASIAAhEBAxEB\\/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL\\/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6\\/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL\\/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6\\/9oADAMBAAIRAxEAPwD3uikoxVGItFJiikAtFJiloAMUmB6UtJQAbV9BSbF\\/uj8qWii4rITYv90UbF9KXFFO4WQmwf5NGxff86dijFAcq7Ddg9\\/zo2D1NOoouLlQzZ\\/tGjZ\\/tGn0UXDlQzYf7xpdp\\/vfpTqTFFx8qFopMUtIYUtJRQO4UUUUAFMaVFOM5PoKpXt6I2MS5ZuhUf1rNa6foz\\/8ASs51OU1jTubhuUHUqPq2KYbxOzoPzrEErEcIB7k0okfjlawddmqpI2ftRz99D+dKLr1UH6GshZHz1P4GpVkbpnP1qVXYeyRrLcRscZwfepuKyUYmrEcrJwD+FbRrJ7mcqdti9RTEcOOKdWydzLVC0UmKMUw1FopMUtACUUlGKCRaKSigBagu5hDATu257+lTVgapch33OTsBwid2PsP8\\/UVM3ZFwV2VJpw2Qvyr+pqLzVRgGIUnoM4z+HU1A\\/mS9cr6BTj9f8P1qMbFzluh52jgfWuCpM74RLizKemc+y4\\/nUgmyOjfpWeLhSAyEkHuoLfqoIqbzwpGWkzxjkD+dYORpylwTR5wWYH1KkD86mRyRlJAw9jmqQnbdgq+MdSCf5CnLJHKdy4PH3l6kfhzS5hOJeF2Iz+8G0evT\\/61XYp0kX1H6isxGY9CJFzgjPI\\/p6cUghePMlq2COsZ6fl2+o\\/WtITM5RRuRvtIOcg9DVsHIzWPaXImXoVcfeU\\/5\\/WtOA5XFd1KV9DlqKxNRRRWxmFFFFADc0UUVRncM0ZpKKBXIrqTy7dj+FcpdzKJGZzlj8ox1PsPQf8A6zzW5rMwitwM4JrjJ33kljgnIHOBgdh7Due\\/5Y560raHVh431JpbwvkZG30Hf\\/H\\/AOv0NRLM28AjcU9edvH5D\\/x2qxXC8swBBz1BOefqPXA+pNAnVWAVeR0AAO0+uOnqCOD6Zri5ZSdoo77xgrsuB\\/MSMY3dw5Xdj8cMP1qfz5ECoVkYf3yo\\/of6VXjTcF3opAOdrMXIPseOKm2SEfNPIR7qnH\\/jtbLBVJGLxlNCRuVd5clU6lmUx4x6naP51OJmK7nGUJ6nkY+oJ\\/XFQJbESCTzSxHQMigf+OgU\\/bMmGBDnOe\\/5ev6n6VM8FViOOKpyZZjmwy5JDHkbj179fT9PrV2G8GcSEoy9GPB+vuOn9cVkxurHauEkPQE4Dnv9D7jBGeRUoYqgypwpHB+8pPTp\\/Tr29Dzq6dmatJm0xyTKgAmTqB0Yf4H+dadnOsgVh0YVg2kwLohwR\\/yzYdPp9D\\/ntnUtFMVxgfdLBh+P\\/wBeuyi9TjqqyNeikpcV2HMFFJRQFxuaM0lIaoyuLmkzRSU7EORzniabbJGmfl25J9Pr\\/ntXKtPhSzBixOFXP5D8M\\/mTXReK4szxyEHBjwP9rBJI\\/LNcpK7ZyWOc7R2O45yfrw5z64rlrRu7HoYeSULkjuVJB5Y9T\\/h7fz6mnQnnNYWo300LeVbpkgfMRwBWS+palnALKPwrvo4dQiclSu5yuekW5UjGauKAV6CvM7TWtRSRSZCQDzxziuv07U3uYwWGWrbksZcxv7VZccGmMqgdOlZN7qv2VORg1h3HjCSJ8LFuUGlyNi5jqZIlcMAv3uuOPxz2PvT7aUyYgkIMmCFZv416EN+gP1B78crb+MtzDdCV55BFbtvqFtqarLCCkqH50P8AEOnH1BI\\/H2rjxWEvHnW504fE2lyPYuoTBKYudrnK888n+ec59+e9dDaz\\/aBA2QSxGSOmQea5u+J+zmRhuIw2cdTwD9AflNbnh9XeVt5LGPJJxgAnGB+R\\/SuSgr6nXWelzoqWkorqOO4uaKSigLkW6mlqSkrSxyOTF3UhakpDVWM3JmJ4pj36asgBJifPHpj\\/APVXExDdI2cNsGMkck8c\\/mp\\/OvQtWiM2mXCDrsz+XNcHZRb4Gc43EkfqankvNHXSqfuWjC1GVEPzMEGeTWe2p21mVzaOyv8AddhjP510N7pYnJOAT7is\\/wDsMugR9hUHIDDOPwrsVupCvbQpQzw3LRusTRebnZkYDY9K6Pw+wMhUoTg9qp\\/2cIogCc7RgcYxW5oVt5OcLwaT8iku4zWI1dwqoMkd65Ga9tYJsyJuQNjIXPNeh6jZido2IxxXMX\\/hvcphVV8vOdpGBn2xTj5kvyILW+sLqPZbuhl7LIm0n6YA\\/rWzpex2yV2uOKyovD7tEluYdsanOAOc+uetdNpmlG2VdxLY7t1ola2hFxly+2wlfgqYWbn\\/AHSB+iiun8NQhNN83BzKQefYAVzdxal4bi3Ax8hUAdAMMBXa2Nv9lsYYSMFEAOPXvXmwjypo9CrO8UWc0ZpMUVZzi5ozRSUDK+aTNFJWpwthmgtSGmmmRcbJhlII4IxXn2BaXk9v2QnH\\/fTV6A1cZ4itPJ1ZbkH5ZY9uPQj\\/APXWtNXZcJ20K\\/mgjpTCgJyBiq6sc8ZqdDn\\/AOvVtHQiCY7pBGCABya19MkhDj5xwOfeua1dpYkMkJOTwaytOu7+IN5krSHscYIp2uimeqO1vPBsMiiQfdqkwD\\/KwGRXHRXGqzXMTROhj7gjkV11sH8kM5yx60mrEXJoFWPtVsTLt4GKpeZt9\\/ahXyaViZF3SIlu72aZxlUYYB9QTiujBrI0OExaerMMNIdxrWFcslqzVTuOzRmkpagsM0ZoooArZpCaQ0hrY89sC1NLUEUhBpk3Gs1cx4pk2xw9Mbua6crWJrtiLu0fB+cDitqVrivY5ASgVQvtUltThI92f0p7uUYoTyDiq1wizHrirkrM7Iu6ImvXnhzO4QE5xmrVrd6f5ZSVWyejDFZraZErbgu9epBPSrUdppjAbolBH+2Rn9aLm0YJrU00u7MFBCTEQRjcetXE8S\\/Z5hbzKSOgZayk0yzuQFiiAz\\/FuJx+tXI9FhgClZC5H985odupnOKT0N9LjzRuHKmrEDeZKqHjccVnq4RABxgVo6PF9pvQedq\\/MTSXcxm7I6xMBQB0FSBqjAxThXIwi2iUNS5pgpwqGdCbHZpM0UUiiqTTSaKStzzrhSE4oNNNAhGaqdzhlIq2elVZhnNawEzzbxUV0\\/UVdBhHGW+tZ8E8dwMqwqz47cS3gRQR5YwSe9cZb3stnJ8pJTPNay1OqltqdotpvGGcYNMGhRtOGM547GufXWyed\\/Xpg1Zj8SFU5bJHAJqUmjVs7K00uNIwY5Ax9c1YeHy8M7cL0riIfE8glBBAX2NLe+JpZoPKjOWPU0+Vsls6G81ZFnEERDSHgDNdv4fjKW0R4JKgsQfWvJNER5LvfISTjg1694elt5rT9zIpZPldAclSOOac7KDOeomzdBpwNMFPArjY4tjwaeDUYp4FQzoi2LmjNFFIu7KeaaXpuaax5roSPOFL00vTGYDvxVJ9TtFuBB5ymVhkKvNWogk2XTJVS8n8m3kk4yBxmql5qqW0W9iiDOMue9YlzfT3MMgd9yvGSAMAAA88f561pGPUuMGzlfE80lzLHcMAYWGzpyO4yffmuQmgyxIziu4udstpLC0YfzflUn+E+tcpLFJBK0Mq4ZTg+9Jtnba2iMCWJgTzwOlM2SEdeP51sNArnkU9bTAHFK4GbFDJuweua1LezkGMIeTxV6104M29xnPat63tUEYXHAo5yGO0u1S3i8x1BwPTmofC\\/iR7HXLgrysspLDPVcnj9asXc4gtn28cVxNm5jumYHo+a0h710yHtc+kIJ0niSRGBVhkEVODWJ4dure40uIW5XagAwK2xXJNWdjNXTHg07NMFPrNm0Wxc0ZpKXFIvU5+fVbeGQxlw0gGdo7Vg6r4olt4IjDGoaZsLznj1qKwtUDspy78kkHnpRqdnbR6hZxyABUhZsucDPAruSijn9nFNIoya5NdELICTns2Afwp8rsoMkWI2iYAPnJJNT2mlRSXRkUnYuWyvIpNRittO0\\/fcS4YgykMepPTikjaTjeyOSv7yWaGVi7M01yNufRQf8RWxdySaamm3TIwt9vly\\/Ru\\/wCYzWa19YmOwQOc5aQgR8jJx6f7Na\\/iG986xjgFk7IUX5mbB4B7fjW0rpERd9EjN1Yst7uh\\/wCPZBwR0JNZRtRqCgAf6YxzuJ4x2H\\/16v2tyLq0GnFgsh+4x7r6U7To1tJ5JvvFGIUN1OO5rNrqaXuuV9Dnbi1ntLhoZ4milQ4KsMEVNC6jAwK6u7D+JrVpoxDLJb\\/KWJxIR6Y9PT\\/9dcvLD5TgEEEGoaEn3L8LYGBV3zdie9ZkLgMB61emBVBSAz9RuWaNue1c7E2Jz6k1s6iMAD+9WYsQWYNxWlJ6ky2PXfAyzJo6THiNzge3bNdYbw24JmGUH8S1xvhC7u49IOSGgQKPLBB2+9dDqDB7Jpod3yjcVH8Q7is5xvLUnmurm5BPHcRLJG25W6Gpc1zFpr1j5Ue3ciADbt5H41fTVCCDuVkPTNZODuUk7GxupQ1VYbuKbvtPoas1m1YE2eRaPbAtNJE8kZCHlTU2sM512zS4labMTABu3P8A9arOh3GnfZJW3uCVA7d6o69dWo8S2pikMmyL7vvk8V1LmsVJxdQ07a0K285gkli34QBGwDk1m+I1WONwCztlUDMcmt+zvoDFB5lrIjMTIMDrgVy+vapLIiBLTbukyCw5pRT0TE2nJtIhFuzazDEqH93FGoAH+yP6k1ua9DKZlURtgEjp7CsezvdRufEshBRcTBcH2OP6Va8RSakZxmdR87dCfQD+lXJLuOm5XRjz2T29yt1sKgdSeBVi4lS6jSK0fJRR5so4BPUgetMsZdRS6C+cj+oboa1LiJxqUkckCW\\/mAFSB8pfHr71F9NDSXxK5DDbKpF3HNNC+fLJgUE8juO4p97bm7toxLboJYwQZUGBIM8H69f8AIqaK2eC5iklJjhIOVOQCfTNTXdwjOI4tpXGTt6D2oTajZmUkpTujl44GN8sYB4Nak0Dbs44FTW9sEuDK3U+9WJ57eCMtK6KPc1JRyWpgtJu6Bayg+6QVv69CI4YmUOpc854FZVrarlXc\\/LnjP8R9K3paK5E+x6L4a1HTU0\\/7E0qpdeWvXglvSur0wGSNo3wCV6djXiLQyC4aUMwYtnI9c16V4Z1qZ4IQziSYYQqR973qJ+Q+VqNyO90+XTrye2Iyg+eMgfwntVzRHme2dZIzIifOoPb1xS6xq1uuqATO0L\\/Zh8hGRnJ6VHpOs2UcgBMwDAjOOKl81wU7wH6he3ukM7QEFR8yq4yCKu2fiO4U28kyFoZkzlR36EYqDUNW0+40uJmnBYAody8\\/yrDstZtF0xkdpFMEwwWXIwQf\\/iauEeZNNGVSWiZU0m8tDYKHUAvIMgr2HNY15dQy+JppIlDbAFQAd8f\\/AK6KKOW0TTmvUOuivL6Pb\\/oZ\\/dW+fu+v\\/wCquWvp725vbOFrbG6QdQRnkUUU0lzLQzU5WYzR5byXXmk3RJulLHLrx1PrVnW5byS4GbqD+I\\/fX+8aKKuSRUJPmRmW73sd4m2WJyTjh1NdJr11dtpN4Z7ZkKY2uARg0UVEUrjrTkmhNMY3+kwXLTMUV1YrjJGeCKoeJZx4dm32yhlkb+P3Gf8AGiism3sbRiuc5O58U3k2cTBB6IMfrUuh3K3V8bm6ZpNv+rDnI3difpRRTN3a2hoah51xN5107BRnLEfoKfa\\/2fJfxxMXVUCjr3xz+uaKK0j8Jyz+I3Z9KspIkME4yc9T7mtPw9YTRXkZABCkdDmiioktwUmokvidtmrWLnGHQrz7f\\/rp8BWN4+MDOKKKynujSnrEiugj2GzaNyTsOnbmsW5byrS\\/UfwvG3T1z\\/jRRVx0kQ\\/hP\\/\\/Z\",\"has_image\":true,\"email_hash\":\"\",\"mobile_hash\":\"4affeb96c4cf60640088712d3f3b7d64dcfccf8dbb06b425098cce2735b2fafe\",\"raw_xml\":\"https:\\/\\/aadhaar-kyc-docs.s3.amazonaws.com\\/nerasoft\\/aadhaar_xml\\/917520250227182422214\\/917520250227182422214-2025-02-27-125422440640.xml?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAY5K3QRM5FYWPQJEB%2F20250227%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20250227T125422Z&X-Amz-Expires=432000&X-Amz-SignedHeaders=host&X-Amz-Signature=0fd24fbdabf9d6e80c34d57fe2738be0d2625b028d35be9a5b9ec989a64c3ab2\",\"zip_data\":\"https:\\/\\/aadhaar-kyc-docs.s3.amazonaws.com\\/nerasoft\\/aadhaar_xml\\/917520250227182422214\\/917520250227182422214-2025-02-27-125422354598.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAY5K3QRM5FYWPQJEB%2F20250227%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20250227T125422Z&X-Amz-Expires=432000&X-Amz-SignedHeaders=host&X-Amz-Signature=d7249f834ab4e83a37753034960571ab83509359b541fd67757a19af8df6313a\",\"care_of\":\"C\\/O: Surinder Singh\",\"share_code\":\"5491\",\"mobile_verified\":false,\"reference_id\":\"917520250227182422214\",\"aadhaar_pdf\":null,\"status\":\"success_aadhaar\",\"uniqueness_id\":\"06d6559db4ddd65ae8d23842f4603ffb574ab3bf8a7cc94cc891b975a75f5044\"}"]);
+        return response()->json(['status' => 'success', 'message' => "Aadhar verified successfully" ,"response"=> "{\"client_id\":\"aadhaar_v2_yroDkhCAOkRCbAxjbcjr\",\"full_name\":\"Rajbir Singh\",\"aadhaar_number\":\"XXXXXXXX9175\",\"dob\":\"2002-11-18\",\"gender\":\"M\",\"address\":{\"country\":\"India\",\"dist\":\"Amritsar\",\"state\":\"Punjab\",\"po\":\"Amritsar G.P.O\",\"loc\":\"Block -E, Pyramid City\",\"vtc\":\"Amritsar -I\",\"subdist\":\"Amritsar\",\"street\":\"Sultanwind Link Road\",\"house\":\"2\",\"landmark\":\"Near Golden Gate\"},\"face_status\":false,\"face_score\":-1,\"zip\":\"143001\",\"profile_image\":\"\\/9j\\/4AAQSkZJRgABAgAAAQABAAD\\/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL\\/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL\\/wAARCADIAKADASIAAhEBAxEB\\/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL\\/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6\\/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL\\/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6\\/9oADAMBAAIRAxEAPwD3uikoxVGItFJiikAtFJiloAMUmB6UtJQAbV9BSbF\\/uj8qWii4rITYv90UbF9KXFFO4WQmwf5NGxff86dijFAcq7Ddg9\\/zo2D1NOoouLlQzZ\\/tGjZ\\/tGn0UXDlQzYf7xpdp\\/vfpTqTFFx8qFopMUtIYUtJRQO4UUUUAFMaVFOM5PoKpXt6I2MS5ZuhUf1rNa6foz\\/8ASs51OU1jTubhuUHUqPq2KYbxOzoPzrEErEcIB7k0okfjlawddmqpI2ftRz99D+dKLr1UH6GshZHz1P4GpVkbpnP1qVXYeyRrLcRscZwfepuKyUYmrEcrJwD+FbRrJ7mcqdti9RTEcOOKdWydzLVC0UmKMUw1FopMUtACUUlGKCRaKSigBagu5hDATu257+lTVgapch33OTsBwid2PsP8\\/UVM3ZFwV2VJpw2Qvyr+pqLzVRgGIUnoM4z+HU1A\\/mS9cr6BTj9f8P1qMbFzluh52jgfWuCpM74RLizKemc+y4\\/nUgmyOjfpWeLhSAyEkHuoLfqoIqbzwpGWkzxjkD+dYORpylwTR5wWYH1KkD86mRyRlJAw9jmqQnbdgq+MdSCf5CnLJHKdy4PH3l6kfhzS5hOJeF2Iz+8G0evT\\/61XYp0kX1H6isxGY9CJFzgjPI\\/p6cUghePMlq2COsZ6fl2+o\\/WtITM5RRuRvtIOcg9DVsHIzWPaXImXoVcfeU\\/5\\/WtOA5XFd1KV9DlqKxNRRRWxmFFFFADc0UUVRncM0ZpKKBXIrqTy7dj+FcpdzKJGZzlj8ox1PsPQf8A6zzW5rMwitwM4JrjJ33kljgnIHOBgdh7Due\\/5Y560raHVh431JpbwvkZG30Hf\\/H\\/AOv0NRLM28AjcU9edvH5D\\/x2qxXC8swBBz1BOefqPXA+pNAnVWAVeR0AAO0+uOnqCOD6Zri5ZSdoo77xgrsuB\\/MSMY3dw5Xdj8cMP1qfz5ECoVkYf3yo\\/of6VXjTcF3opAOdrMXIPseOKm2SEfNPIR7qnH\\/jtbLBVJGLxlNCRuVd5clU6lmUx4x6naP51OJmK7nGUJ6nkY+oJ\\/XFQJbESCTzSxHQMigf+OgU\\/bMmGBDnOe\\/5ev6n6VM8FViOOKpyZZjmwy5JDHkbj179fT9PrV2G8GcSEoy9GPB+vuOn9cVkxurHauEkPQE4Dnv9D7jBGeRUoYqgypwpHB+8pPTp\\/Tr29Dzq6dmatJm0xyTKgAmTqB0Yf4H+dadnOsgVh0YVg2kwLohwR\\/yzYdPp9D\\/ntnUtFMVxgfdLBh+P\\/wBeuyi9TjqqyNeikpcV2HMFFJRQFxuaM0lIaoyuLmkzRSU7EORzniabbJGmfl25J9Pr\\/ntXKtPhSzBixOFXP5D8M\\/mTXReK4szxyEHBjwP9rBJI\\/LNcpK7ZyWOc7R2O45yfrw5z64rlrRu7HoYeSULkjuVJB5Y9T\\/h7fz6mnQnnNYWo300LeVbpkgfMRwBWS+palnALKPwrvo4dQiclSu5yuekW5UjGauKAV6CvM7TWtRSRSZCQDzxziuv07U3uYwWGWrbksZcxv7VZccGmMqgdOlZN7qv2VORg1h3HjCSJ8LFuUGlyNi5jqZIlcMAv3uuOPxz2PvT7aUyYgkIMmCFZv416EN+gP1B78crb+MtzDdCV55BFbtvqFtqarLCCkqH50P8AEOnH1BI\\/H2rjxWEvHnW504fE2lyPYuoTBKYudrnK888n+ec59+e9dDaz\\/aBA2QSxGSOmQea5u+J+zmRhuIw2cdTwD9AflNbnh9XeVt5LGPJJxgAnGB+R\\/SuSgr6nXWelzoqWkorqOO4uaKSigLkW6mlqSkrSxyOTF3UhakpDVWM3JmJ4pj36asgBJifPHpj\\/APVXExDdI2cNsGMkck8c\\/mp\\/OvQtWiM2mXCDrsz+XNcHZRb4Gc43EkfqankvNHXSqfuWjC1GVEPzMEGeTWe2p21mVzaOyv8AddhjP510N7pYnJOAT7is\\/wDsMugR9hUHIDDOPwrsVupCvbQpQzw3LRusTRebnZkYDY9K6Pw+wMhUoTg9qp\\/2cIogCc7RgcYxW5oVt5OcLwaT8iku4zWI1dwqoMkd65Ga9tYJsyJuQNjIXPNeh6jZido2IxxXMX\\/hvcphVV8vOdpGBn2xTj5kvyILW+sLqPZbuhl7LIm0n6YA\\/rWzpex2yV2uOKyovD7tEluYdsanOAOc+uetdNpmlG2VdxLY7t1ola2hFxly+2wlfgqYWbn\\/AHSB+iiun8NQhNN83BzKQefYAVzdxal4bi3Ax8hUAdAMMBXa2Nv9lsYYSMFEAOPXvXmwjypo9CrO8UWc0ZpMUVZzi5ozRSUDK+aTNFJWpwthmgtSGmmmRcbJhlII4IxXn2BaXk9v2QnH\\/fTV6A1cZ4itPJ1ZbkH5ZY9uPQj\\/APXWtNXZcJ20K\\/mgjpTCgJyBiq6sc8ZqdDn\\/AOvVtHQiCY7pBGCABya19MkhDj5xwOfeua1dpYkMkJOTwaytOu7+IN5krSHscYIp2uimeqO1vPBsMiiQfdqkwD\\/KwGRXHRXGqzXMTROhj7gjkV11sH8kM5yx60mrEXJoFWPtVsTLt4GKpeZt9\\/ahXyaViZF3SIlu72aZxlUYYB9QTiujBrI0OExaerMMNIdxrWFcslqzVTuOzRmkpagsM0ZoooArZpCaQ0hrY89sC1NLUEUhBpk3Gs1cx4pk2xw9Mbua6crWJrtiLu0fB+cDitqVrivY5ASgVQvtUltThI92f0p7uUYoTyDiq1wizHrirkrM7Iu6ImvXnhzO4QE5xmrVrd6f5ZSVWyejDFZraZErbgu9epBPSrUdppjAbolBH+2Rn9aLm0YJrU00u7MFBCTEQRjcetXE8S\\/Z5hbzKSOgZayk0yzuQFiiAz\\/FuJx+tXI9FhgClZC5H985odupnOKT0N9LjzRuHKmrEDeZKqHjccVnq4RABxgVo6PF9pvQedq\\/MTSXcxm7I6xMBQB0FSBqjAxThXIwi2iUNS5pgpwqGdCbHZpM0UUiiqTTSaKStzzrhSE4oNNNAhGaqdzhlIq2elVZhnNawEzzbxUV0\\/UVdBhHGW+tZ8E8dwMqwqz47cS3gRQR5YwSe9cZb3stnJ8pJTPNay1OqltqdotpvGGcYNMGhRtOGM547GufXWyed\\/Xpg1Zj8SFU5bJHAJqUmjVs7K00uNIwY5Ax9c1YeHy8M7cL0riIfE8glBBAX2NLe+JpZoPKjOWPU0+Vsls6G81ZFnEERDSHgDNdv4fjKW0R4JKgsQfWvJNER5LvfISTjg1694elt5rT9zIpZPldAclSOOac7KDOeomzdBpwNMFPArjY4tjwaeDUYp4FQzoi2LmjNFFIu7KeaaXpuaax5roSPOFL00vTGYDvxVJ9TtFuBB5ymVhkKvNWogk2XTJVS8n8m3kk4yBxmql5qqW0W9iiDOMue9YlzfT3MMgd9yvGSAMAAA88f561pGPUuMGzlfE80lzLHcMAYWGzpyO4yffmuQmgyxIziu4udstpLC0YfzflUn+E+tcpLFJBK0Mq4ZTg+9Jtnba2iMCWJgTzwOlM2SEdeP51sNArnkU9bTAHFK4GbFDJuweua1LezkGMIeTxV6104M29xnPat63tUEYXHAo5yGO0u1S3i8x1BwPTmofC\\/iR7HXLgrysspLDPVcnj9asXc4gtn28cVxNm5jumYHo+a0h710yHtc+kIJ0niSRGBVhkEVODWJ4dure40uIW5XagAwK2xXJNWdjNXTHg07NMFPrNm0Wxc0ZpKXFIvU5+fVbeGQxlw0gGdo7Vg6r4olt4IjDGoaZsLznj1qKwtUDspy78kkHnpRqdnbR6hZxyABUhZsucDPAruSijn9nFNIoya5NdELICTns2Afwp8rsoMkWI2iYAPnJJNT2mlRSXRkUnYuWyvIpNRittO0\\/fcS4YgykMepPTikjaTjeyOSv7yWaGVi7M01yNufRQf8RWxdySaamm3TIwt9vly\\/Ru\\/wCYzWa19YmOwQOc5aQgR8jJx6f7Na\\/iG986xjgFk7IUX5mbB4B7fjW0rpERd9EjN1Yst7uh\\/wCPZBwR0JNZRtRqCgAf6YxzuJ4x2H\\/16v2tyLq0GnFgsh+4x7r6U7To1tJ5JvvFGIUN1OO5rNrqaXuuV9Dnbi1ntLhoZ4milQ4KsMEVNC6jAwK6u7D+JrVpoxDLJb\\/KWJxIR6Y9PT\\/9dcvLD5TgEEEGoaEn3L8LYGBV3zdie9ZkLgMB61emBVBSAz9RuWaNue1c7E2Jz6k1s6iMAD+9WYsQWYNxWlJ6ky2PXfAyzJo6THiNzge3bNdYbw24JmGUH8S1xvhC7u49IOSGgQKPLBB2+9dDqDB7Jpod3yjcVH8Q7is5xvLUnmurm5BPHcRLJG25W6Gpc1zFpr1j5Ue3ciADbt5H41fTVCCDuVkPTNZODuUk7GxupQ1VYbuKbvtPoas1m1YE2eRaPbAtNJE8kZCHlTU2sM512zS4labMTABu3P8A9arOh3GnfZJW3uCVA7d6o69dWo8S2pikMmyL7vvk8V1LmsVJxdQ07a0K285gkli34QBGwDk1m+I1WONwCztlUDMcmt+zvoDFB5lrIjMTIMDrgVy+vapLIiBLTbukyCw5pRT0TE2nJtIhFuzazDEqH93FGoAH+yP6k1ua9DKZlURtgEjp7CsezvdRufEshBRcTBcH2OP6Va8RSakZxmdR87dCfQD+lXJLuOm5XRjz2T29yt1sKgdSeBVi4lS6jSK0fJRR5so4BPUgetMsZdRS6C+cj+oboa1LiJxqUkckCW\\/mAFSB8pfHr71F9NDSXxK5DDbKpF3HNNC+fLJgUE8juO4p97bm7toxLboJYwQZUGBIM8H69f8AIqaK2eC5iklJjhIOVOQCfTNTXdwjOI4tpXGTt6D2oTajZmUkpTujl44GN8sYB4Nak0Dbs44FTW9sEuDK3U+9WJ57eCMtK6KPc1JRyWpgtJu6Bayg+6QVv69CI4YmUOpc854FZVrarlXc\\/LnjP8R9K3paK5E+x6L4a1HTU0\\/7E0qpdeWvXglvSur0wGSNo3wCV6djXiLQyC4aUMwYtnI9c16V4Z1qZ4IQziSYYQqR973qJ+Q+VqNyO90+XTrye2Iyg+eMgfwntVzRHme2dZIzIifOoPb1xS6xq1uuqATO0L\\/Zh8hGRnJ6VHpOs2UcgBMwDAjOOKl81wU7wH6he3ukM7QEFR8yq4yCKu2fiO4U28kyFoZkzlR36EYqDUNW0+40uJmnBYAody8\\/yrDstZtF0xkdpFMEwwWXIwQf\\/iauEeZNNGVSWiZU0m8tDYKHUAvIMgr2HNY15dQy+JppIlDbAFQAd8f\\/AK6KKOW0TTmvUOuivL6Pb\\/oZ\\/dW+fu+v\\/wCquWvp725vbOFrbG6QdQRnkUUU0lzLQzU5WYzR5byXXmk3RJulLHLrx1PrVnW5byS4GbqD+I\\/fX+8aKKuSRUJPmRmW73sd4m2WJyTjh1NdJr11dtpN4Z7ZkKY2uARg0UVEUrjrTkmhNMY3+kwXLTMUV1YrjJGeCKoeJZx4dm32yhlkb+P3Gf8AGiism3sbRiuc5O58U3k2cTBB6IMfrUuh3K3V8bm6ZpNv+rDnI3difpRRTN3a2hoah51xN5107BRnLEfoKfa\\/2fJfxxMXVUCjr3xz+uaKK0j8Jyz+I3Z9KspIkME4yc9T7mtPw9YTRXkZABCkdDmiioktwUmokvidtmrWLnGHQrz7f\\/rp8BWN4+MDOKKKynujSnrEiugj2GzaNyTsOnbmsW5byrS\\/UfwvG3T1z\\/jRRVx0kQ\\/hP\\/\\/Z\",\"has_image\":true,\"email_hash\":\"\",\"mobile_hash\":\"4affeb96c4cf60640088712d3f3b7d64dcfccf8dbb06b425098cce2735b2fafe\",\"raw_xml\":\"https:\\/\\/aadhaar-kyc-docs.s3.amazonaws.com\\/nerasoft\\/aadhaar_xml\\/917520250227182422214\\/917520250227182422214-2025-02-27-125422440640.xml?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAY5K3QRM5FYWPQJEB%2F20250227%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20250227T125422Z&X-Amz-Expires=432000&X-Amz-SignedHeaders=host&X-Amz-Signature=0fd24fbdabf9d6e80c34d57fe2738be0d2625b028d35be9a5b9ec989a64c3ab2\",\"zip_data\":\"https:\\/\\/aadhaar-kyc-docs.s3.amazonaws.com\\/nerasoft\\/aadhaar_xml\\/917520250227182422214\\/917520250227182422214-2025-02-27-125422354598.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAY5K3QRM5FYWPQJEB%2F20250227%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20250227T125422Z&X-Amz-Expires=432000&X-Amz-SignedHeaders=host&X-Amz-Signature=d7249f834ab4e83a37753034960571ab83509359b541fd67757a19af8df6313a\",\"care_of\":\"C\\/O: Surinder Singh\",\"share_code\":\"5491\",\"mobile_verified\":false,\"reference_id\":\"917520250227182422214\",\"aadhaar_pdf\":null,\"status\":\"success_aadhaar\",\"uniqueness_id\":\"06d6559db4ddd65ae8d23842f4603ffb574ab3bf8a7cc94cc891b975a75f5044\"}"]);
 
         $rules = array(
             'otp'       => 'required',
@@ -210,6 +213,7 @@ class ApiController extends Controller
         $user = User::find($request->user->id);
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->t_shirt_size = $request->t_shirt_size;
         $user->mobile_no = $request->mobile;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -225,6 +229,7 @@ class ApiController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'mobile' => $user->mobile_no,
+                    't_shirt_size' => $user->t_shirt_size,
                     'image' => $user->image // Return full image URL
                 ]
             ], 200);
@@ -234,6 +239,67 @@ class ApiController extends Controller
             'status' => 'error',
             'message' => 'Profile update failed. Please try again.'
         ], 500);
+    }
+
+    public function add_helper(Request $request){
+
+        $user = $request->user;
+        $rules = array(
+            'name'       => 'required',
+            'age' => "required",
+            'mobile'    => "required",
+            'dob'    => "required",
+            'gender'    => "required",
+            'address'    => "required",
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        );
+        $validate = \Myhelper::FormValidator($rules, $request);
+        if ($validate != "no") {
+            return $validate;
+        }
+        $check_helper = DB::table('tbl_helpers')->where('mobile',$request->mobile)->first();
+        if($check_helper){
+            return response()->json([
+                'status'=>'error',
+                'message'=>'helper already exists.'
+            ]);
+        }
+        $image = '';
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/helper'), $imageName);
+            $image = 'uploads/helper/' . $imageName;
+        }
+        DB::table('tbl_helpers')->insert(['user_id'=>$request->user->id,'name'=>$request->name,'dob'=>$request->dob,'age'=>$request->age,'mobile'=>$request->mobile,'gender'=>$request->gender,'address'=>$request->address,'image'=>$image]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'helper add successfully',
+        ], 200);
+    }
+
+    public function get_helper(Request $request){
+        $get_helper = DB::table('tbl_helpers')->where('user_id',$request->user->id)->where('status',1)->get();
+        return response()->json([
+            'status'=>'success',
+            'message' =>'helper fetched successfully',
+            'data' => $get_helper
+        ]);
+    }
+
+    public function delete_helper(Request $request ,$id){
+      $delete_helper = DB::table('tbl_helpers')->where('id',$id)->delete();
+      if($delete_helper){
+        return response()->json([
+            'status' => 'success',
+            'message' => 'helper deleted successfully',
+        ], 200);
+      }else{
+        return response()->json([
+            'status' => 'error',
+            'message' => 'helper not deleted!',
+        ], 200);
+      }
     }
 
 
@@ -435,9 +501,13 @@ class ApiController extends Controller
         if ($request->step) {
             $user_update->step = $request->step;
         }
+        if($request->kyc_status){
+            $user_update->kyc_status = $request->kyc_status;
+        }
         $user_update->save();
         return response()->json(['status' => 'OK', 'message' => "KYC updated successfully"]);
     }
+
 
     public function get_services()
     {
@@ -615,75 +685,151 @@ class ApiController extends Controller
     public function create_booking(Request $request)
     {
         $rules = array(
-            'package_id'       => 'required',
+            'cart_id'       => 'required',
             'address_id'       => 'required',
             'booking_date'       => 'required',
             'booking_time'       => 'required',
-            'booking_amount'       => 'required',
-            'tax_amount'       => 'required',
-            'total_amount'       => 'required',
+
         );
         $validate = \Myhelper::FormValidator($rules, $request);
         if ($validate != "no") {
             return $validate;
         }
-        $package_id = $request->package_id;
-        $address_id = $request->address_id;
-        $booking_date = $request->booking_date;
-        $booking_time = $request->booking_time;
-        $description  = $request->description;
-        $booking_amount  = $request->booking_amount;
-        $tax_amount  = $request->tax_amount;
-        $total_amount  = $request->total_amount;
-        $get_address  = DB::table('tbl_address')->where('status', 1)->where('id', $address_id)->where('user_id', $request->user->id)->first();
-        $insert_booking = DB::table('tbl_pet_bookings')->insert([
-            'package_id' => $package_id,
-            'booking_date' => $booking_date,
-            'booking_time' => $booking_time,
-            'booking_amount' => $booking_amount,
-            'tax_amount' => $tax_amount,
-            'total_amount' => $total_amount,
-            'description' => $description,
-            'customer_id' => $request->user->id,
-            'flat_house_no'         => $get_address->flat_house_no,
-            'area_sector_locality'  => $get_address->area_sector_locality,
-            'city_district'         => $get_address->city_district,
-            'state'                 => $get_address->state,
-            'pincode'               => $get_address->pincode,
-            'complete_address'      => $get_address->complete_address,
-            'email_address'         => $get_address->email_address
-        ]);
-        if ($insert_booking) {
+        if(!empty($request->cart_id)){
+            for($i=0; count($request->cart_id)>$i; $i++){
+            $cart_id = '';
+            $cart_id = $request->cart_id[$i];
+            $address_id = $request->address_id;
+            $booking_date = $request->booking_date;
+            $booking_time = $request->booking_time;
+            $description  = $request->description;
+            $booking_amount  = $request->booking_amount;
+            $tax_amount  = $request->tax_amount;
+            $total_amount  = $request->total_amount;
+            $get_cart = DB::table('tbl_cart')->where('id',$cart_id)->where('status',1)->first();
+            if(!$get_cart){
+                return response()->json(['status' => 'Error', 'message' => 'Cart Service Not Found']);
+
+            }
+            $get_service = DB::table('packages')->where('id',$get_cart->service_id)->where('status',1)->first();
+            if(!$get_service){
+                return response()->json(['status' => 'Error', 'message' => ' Service Not Found']);
+
+            }
+            $get_booking_amount  = $get_cart->charge;
+            $get_tax  = $get_service->tax;
+            $get_tax_amount = $get_service->$get_booking_amount * ($get_tax / 100);
+            $get_final_tax_amount  = number_format($get_tax_amount);
+            $get_address  = DB::table('tbl_address')->where('status', 1)->where('id', $address_id)->where('user_id', $request->user->id)->first();
+            if(!$get_address){
+                return response()->json(['status' => 'Error', 'message' => ' Address Not Found']);
+
+            }
+            // $insert_booking_id = '';
+            $insert_booking_id = DB::table('tbl_pet_bookings')->insertGetId([
+                'cart_id' => $cart_id,
+                'package_id' => $get_cart->service_id,
+                'package_name' => $get_service->title,
+                'booking_date' => $booking_date,
+                'booking_time' => $booking_time,
+                'booking_amount' => $get_service->$get_booking_amount,
+                'tax_amount' => $get_final_tax_amount,
+                'total_amount' => $get_service->$get_booking_amount + $get_final_tax_amount,
+                'description' => $description,
+                'customer_id' => $request->user->id,
+                'flat_house_no' => $get_address->flat_house_no,
+                'area_sector_locality' => $get_address->area_sector_locality,
+                'city_district' => $get_address->city_district,
+                'state' => $get_address->state,
+                'pincode' => $get_address->pincode,
+                'complete_address' => $get_address->complete_address,
+                'email_address' => $get_address->email_address
+            ]);
+            $remove_cart = DB::table('tbl_cart')->where('id',$cart_id)->update(['status'=>3]);
+            GlobalHelper::SaveNotification($insert_booking_id,$request->user->id,1,'buy package');
+        }
+        }
+
+        if ($insert_booking_id) {
             return response()->json(['status' => 'OK', 'message' => 'Booking created successfully']);
         } else {
             return response()->json(['status' => 'Error', 'message' => 'Failed to create booking']);
         }
     }
 
-    public function my_booking(Request $request)
-    {
-        $get_array = DB::table('tbl_pet_bookings as a')->select('a.*')->where('a.status', 1)->orderBy('a.id', 'desc')->get();
-        return response()->json(['status' => 'OK', 'message' => 'Booking fetched successfully', 'data' => $get_array], 200);
+    public function cancel_booking(Request $request , $id){
+
+        $insert_cancel = DB::table('tbl_booking_log')->insert(['user_id'=>$request->user->id,'booking_id'=>$id,'type'=>1]);
+        if($insert_cancel){
+            return response()->json(['status' => 'OK', 'message' => 'Booking cancel successfully'], 200);
+        }else{
+            return response()->json(['status' => 'Error', 'message' => 'Error']);
+        }
+    }
+
+   public function my_booking(Request $request){
+        $get_array = DB::table('tbl_pet_bookings as a')->leftJoin('users as b','a.accept_user_id','=','b.id')->select('a.*','b.name as user_name','b.mobile_no as user_mobile','b.image as user_profile_img')->where('a.customer_id',$request->user->id)->where('a.status', 1)->orderBy('a.id', 'desc')->get();
+
+        if(!empty($get_array)){
+            $get_book = [];
+            foreach($get_array as $book ){
+               $note_data = DB::table('tbl_notification')->where('booking_id',$book->id)->where('status',1)->get();
+               $new_arr = [];
+               foreach($note_data as $note){
+                $note->user = DB::table('users')->select('name','email','mobile_no')->where('id',$note->user_id)->where('status',1)->first();
+                $note->package_info = DB::table('packages')->where('id',$book->package_id)->where('status',1)->first();
+
+                $new_arr[] = $note;
+               }
+               $book->notification = $new_arr;
+               $get_book[] = $book;
+            }
+        }
+        return response()->json(['status' => 'OK', 'message' => 'Booking fetched successfully', 'data' => $get_book], 200);
+    }
+
+    public function my_booking_groomer(Request $request){
+        $get_array = DB::table('tbl_pet_bookings as a')->leftJoin('users as b','a.customer_id','=','b.id')->select('a.*','b.name as user_name','b.mobile_no as user_mobile','b.image as user_profile_img')->where('a.accept_user_id',$request->user->id)->where('a.status', 1)->orderBy('a.id', 'desc')->get();
+
+        if(!empty($get_array)){
+            $get_book = [];
+            foreach($get_array as $book ){
+               $note_data = DB::table('tbl_notification')->where('booking_id',$book->id)->where('status',1)->get();
+               $new_arr = [];
+               foreach($note_data as $note){
+                $note->user = DB::table('users')->select('name','email','mobile_no')->where('id',$note->user_id)->where('status',1)->first();
+                $note->package_info = DB::table('packages')->where('id',$book->package_id)->where('status',1)->first();
+                $new_arr[] = $note;
+               }
+               $book->notification = $new_arr;
+               $get_book[] = $book;
+            }
+        }
+        return response()->json(['status' => 'OK', 'message' => 'Booking fetched successfully', 'data' => $get_book], 200);
     }
 
     public function fetch_booking(Request $request)
     {
-
-        $booking = DB::table('pet_category')->where('user_id', $request->user->id)->where('status', 1)->orderBy('id', 'desc')->get();
-
-        $get_array = array();
-        if (!empty($booking)) {
-
-            foreach ($booking as $book) {
-                $book->get_booking = DB::table('tbl_pet_bookings as a')->join('users as b', 'a.customer_id', '=', 'b.id')->select('b.name as user_name', 'a.*')->where('a.status', 1)->where('b.status', 1)->orderBy('id', 'desc')->get();
-                $get_array[] = $book;
-            }
-
-            return response()->json(['status' => 'OK', 'message' => 'Booking fetched successfully', 'data' => $get_array]);
+        $get_booking_log = DB::table('tbl_booking_log')->where('user_id', $request->user->id)->where('type',1)->get();
+        $booking_id = '';
+        foreach ($get_booking_log as $log) {
+            $booking_id .= $log->booking_id . ',';
+        }
+        $string = rtrim($booking_id, ',');
+        $booking_ids = explode(',', $string);
+        $book = DB::table('tbl_pet_bookings as a')
+            ->where('a.status', 1)
+            ->whereIn('a.booking_status', [1, 3])
+            ->whereNotIn('a.id', $booking_ids)
+            ->orderBy('a.id', 'desc')
+            ->get();
+        if ($book->isNotEmpty()) {
+            return response()->json(['status' => 'OK', 'message' => 'Booking fetched successfully', 'data' => $book]);
         } else {
             return response()->json(['status' => 'Error', 'message' => 'No booking found']);
         }
     }
+
 
     public function fetch_pet_category(Request $request)
     {
@@ -708,9 +854,23 @@ class ApiController extends Controller
         if ($validate != "no") {
             return $validate;
         }
-        $booking_status_update = DB::table('tbl_pet_bookings')
-            ->where('id', $request->id)
-            ->update(['booking_status' => $request->booking_status]);
+        if ($request->user->role_id != 5) {
+            DB::table('tbl_pet_bookings')
+                ->where('id', $request->id)
+                ->update(['accept_user_id' => $request->user->id,'booking_status'=>$request->booking_status]);
+            $insert_cancel = DB::table('tbl_booking_log')->insert(['user_id'=>$request->user->id,'booking_id'=>$request->id,'type'=>2]);
+            $subject = '';
+            if($request->booking_status == 2){
+                $subject = 'accept booking';
+            }
+            if($request->booking_status == 3){
+                $subject = 'cancel booking';
+            }
+            if($request->booking_status == 4){
+                $subject = 'complete booking';
+            }
+            GlobalHelper::SaveNotification($request->id,$request->user->id,$request->booking_status,$subject);
+        }
         return response()->json(['status' => 'OK', 'message' => 'Booking status updated successfully']);
     }
 
@@ -755,13 +915,13 @@ class ApiController extends Controller
     {
         $cart_services = DB::table('tbl_cart as a')
             ->join('packages as b', 'a.service_id', '=', 'b.id')
-            ->select('b.*', 'a.id as cart_id', 'a.charge as price')->where('b.status', 1)
+            ->select('b.*', 'a.id as cart_id', 'a.charge as price')->where('b.status', 1)->where('a.user_id',$request->user->id)->where('a.status',1)
             ->get();
         return response()->json(['status' => 'OK', 'data' => $cart_services], 200);
     }
     public function delete_cart_service(Request $request, $id)
     {
-        $delete_cart_service = DB::table('tbl_cart')->where('id', $id)->delete();
+        $delete_cart_service = DB::table('tbl_cart')->where('id', $id)->update(['status'=>3]);
         if ($delete_cart_service) {
             return response()->json(['status' => 'OK', 'message' => 'Service deleted from cart successfully.'], 200);
         } else {
@@ -804,13 +964,13 @@ class ApiController extends Controller
 
     public function get_address(Request $request)
     {
-        $addresses = DB::table('tbl_address')->where('status', 1)->get();
+        $addresses = DB::table('tbl_address')->where('status', 1)->where('user_id',$request->user->id)->get();
         return response()->json(['status' => 'OK', 'data' => $addresses], 200);
     }
 
     public function delete_address(Request $request, $id)
     {
-        $deleted = DB::table('tbl_address')->where('id', $id)->delete();
+        $deleted = DB::table('tbl_address')->where('id', $id)->update(['status'=>3]);
 
         if ($deleted) {
             return response()->json(['status' => 'OK', 'message' => 'Address deleted successfully.'], 200);

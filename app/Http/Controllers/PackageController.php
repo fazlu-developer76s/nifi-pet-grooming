@@ -44,6 +44,7 @@ class PackageController extends Controller
             $package->small_charge = $request->small_charge;
             $package->large_charge = $request->large_charge;
             $package->gaint_charge = $request->gaint_charge;
+            $package->tax = $request->tax;
             $package->status = $request->status;
             $package->description = $request->description;
             if ($request->hasFile('thumbnail')) {
@@ -101,6 +102,7 @@ class PackageController extends Controller
         $package->small_charge = $request->small_charge;
         $package->large_charge = $request->large_charge;
         $package->gaint_charge = $request->large_charge;
+        $package->tax = $request->tax;
         $package->status = $request->status;
         $package->description = $request->description;
         $package->updated_at = date('Y-m-d H:i:s');

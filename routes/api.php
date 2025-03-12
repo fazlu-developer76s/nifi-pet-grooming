@@ -40,6 +40,9 @@ Route::middleware(['jwt'])->group(function () {
     Route::get('user/get-kyc',[ApiController::class, 'get_kyc']);
     Route::post('user/get-kyc',[ApiController::class, 'get_kyc']);
     Route::post('user/update-profile-user',[ApiController::class, 'update_profile']);
+    Route::post('user/add-helper',[ApiController::class, 'add_helper']);
+    Route::get('user/get-helper',[ApiController::class, 'get_helper']);
+    Route::delete('user/delete-helper/{id}',[ApiController::class, 'delete_helper']);
     Route::get('user/get-user-profile', [ApiController::class, 'user_profile']);
     Route::post('user/referal', [AuthController::class, 'referal']);
     Route::post('user/user-logout', [AuthController::class, 'user_logout']);
@@ -63,7 +66,9 @@ Route::middleware(['jwt'])->group(function () {
     Route::get('user/my-booking', [ApiController::class, 'my_booking']);
     Route::get('user/fetch-pet-category', [ApiController::class, 'fetch_pet_category']);
     Route::post('user/accept-booking', [ApiController::class, 'accept_booking']);
-    Route::post('user/fetch-grommer-booking', [ApiController::class, 'fetch_booking']);
+    Route::post('user/cancel-booking/{id}', [ApiController::class, 'cancel_booking']);
+    Route::get('user/fetch-grommer-booking', [ApiController::class, 'fetch_booking']);
+    Route::get('user/my-booking-groomer', [ApiController::class, 'my_booking_groomer']);
     Route::post('user/messages', [MessageController::class, 'getMessages']);
     Route::post('user/send-message', [MessageController::class, 'sendMessage']);
     Route::post('user/mark-as-read', [MessageController::class, 'markAsRead']);

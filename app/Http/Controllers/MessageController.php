@@ -59,14 +59,36 @@ class MessageController extends Controller
     }
 
     public function fetchUsers(Request $request){
-        $role_id='';
-        if($request->type == 1){
-            $role_id = 3;
+
+        $fetch_bookings = DB::table('tbl_pet_bookings')->where('status',1)->whereIn('booking_status',[2,4]);
+        if($request->user->role_id == 3){
+            $fetch_bookings->where('accept_user_id',$request->user->id);
         }
-        if($request->type == 2){
-            $role_id = 5;
+        if($request->user->role_id == 5){
+            $fetch_bookings->where('customer_id',$request->user->id);
         }
-        $users = DB::table('users as a')->join('roles as b','a.role_id','=','b.id')->select('a.*','b.title as role_name')->where('a.status',1)->where('b.status',1)->where('a.role_id',$role_id)->get();
-        return response()->json(['status' => 'OK', 'message'=>'Fetch User Successfully','data' => $users]);
+        $fetch_booking = $fetch_bookings->get();
+        $accept_ids = '';
+        $customer_ids = '';
+        foreach($fetch_booking as $book){
+            $accept_ids .= $book->accept_user_id.',';
+            $customer_ids .= $book->customer_id.',';
+        }
+        $accept_id_string = rtrim($accept_ids, ',');
+        $accept_id = explode(',', $accept_id_string);
+        $customer_id_string = rtrim($customer_ids, ',');
+        $customer_id = explode(',', $customer_id_string);
+        $users = DB::table('users as a')
+            ->where('a.status', 1);
+            if($request->user->role_id == 5){
+                $users->whereIn('a.id',$accept_id);
+            }
+            if($request->user->role_id == 3){
+
+                $users->whereIn('a.id',$customer_id);
+            }
+            $get_users = $users->orderBy('a.id', 'desc')
+            ->get();
+        return response()->json(['status' => 'OK', 'message'=>'Fetch User Successfully','data' => $get_users]);
     }
 }
