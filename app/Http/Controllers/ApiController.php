@@ -473,11 +473,27 @@ class ApiController extends Controller
             $user_update->is_current_location_verified = $request->is_current_location_verified;
         }
 
+        // if ($request->hasFile('equipment_image')) {
+        //     $file = $request->file('equipment_image');
+        //     $filePath = $file->store('kyc', 'public');
+        //     $user_update->equipment_image = $filePath;
+        // }
+        
         if ($request->hasFile('equipment_image')) {
-            $file = $request->file('equipment_image');
-            $filePath = $file->store('kyc', 'public');
-            $user_update->equipment_image = $filePath;
-        }
+    $filePaths = [];
+
+    foreach ($request->file('equipment_image') as $file) {
+        $filePaths[] = $file->store('kyc', 'public');
+    }
+
+    // Store file paths as JSON or an array depending on your database structure
+    $user_update->equipment_image = json_encode($filePaths); 
+}
+        
+        
+        
+        
+        
         if ($request->is_equipment_verified) {
             $user_update->is_equipment_verified = $request->is_equipment_verified;
         }
@@ -898,12 +914,12 @@ class ApiController extends Controller
     public function add_to_cart(Request $request, $id, $price)
     {
         $check_cart = DB::table('tbl_cart')->where('user_id', $request->user->id)->where('service_id', $id)->first();
-        if ($check_cart) {
-            $add_cart = DB::table('tbl_cart')
-                ->where('id', $check_cart->id)
-                ->update(['charge' => $price]);
-            return response()->json(['status' => 'Exist', 'message' => 'Service already added to cart.'], 200);
-        }
+        // if ($check_cart) {
+        //     $add_cart = DB::table('tbl_cart')
+        //         ->where('id', $check_cart->id)
+        //         ->update(['charge' => $price]);
+        //     return response()->json(['status' => 'Exist', 'message' => 'Service already added to cart.'], 200);
+        // }
         $add_cart = DB::table('tbl_cart')->insert(['user_id' => $request->user->id, 'charge' => $price, 'service_id' => $id]);
         if ($add_cart) {
             return response()->json(['status' => 'OK', 'message' => 'Service added to cart successfully.'], 200);
