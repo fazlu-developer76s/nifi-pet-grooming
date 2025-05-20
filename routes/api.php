@@ -32,8 +32,11 @@ Route::post('user/user-resend-otp', [AuthController::class, 'resend_otp']);
 Route::post('user/user-login-otp', [AuthController::class, 'user_otp']);
 Route::post('user/token-status', [AuthController::class, 'getTokenStatus']);
 Route::get('user/referal-signup', [AuthController::class, 'register_referral_user'])->name('referaluser');
+Route::post('razorpay/webhook', [ApiController::class, 'handle']);
 
 Route::middleware(['jwt'])->group(function () {
+       Route::post('user/create-razorpay-order', [ApiController::class, 'createOrder']);
+    Route::post('user/create-razorpay-payment', [ApiController::class, 'payment']);
     Route::post('user/get-aadhar-otp',[ApiController::class, 'get_aadhar_otp']);
     Route::post('user/check-aadhar-otp',[ApiController::class, 'checkaadharotp']);
     Route::post('user/update-kyc',[ApiController::class, 'update_kyc']);

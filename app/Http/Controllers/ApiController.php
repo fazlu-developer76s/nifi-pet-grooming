@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Razorpay\Api\Api;
+use Illuminate\Support\Str;
 use App\Models\Kycprocess;
 use App\Models\Package;
 use App\Models\Page;
@@ -1057,4 +1058,133 @@ class ApiController extends Controller
             return response()->json(['status' => 'Error', 'data' => 'Page not found.'], 404);
         }
     }
+    
+      public function createOrder(Request $request)
+    {
+
+
+     
+
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+
+        $amount = $request->amount; // Amount in INR
+        $receiptId = 'BOOKING_' . Str::random(8); // Custom receipt ID
+
+        try {
+            $orderData = [
+                'receipt'         => $receiptId,
+                'amount'          => $amount * 100, // Amount in paisa
+                'currency'        => 'INR',
+                'payment_capture' => 1 // Auto capture after payment
+            ];
+
+            $order = $api->order->create($orderData); // Creates Razorpay Order
+
+            return response()->json([
+                'success' => true,
+                'order_id' => $order['id'],
+                'amount' => $order['amount'],
+                'currency' => $order['currency'],
+                'receipt' => $order['receipt']
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+
+    public function payment(Request $request)
+    {
+
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        try {
+            // Fetch the payment details
+            $payment = $api->payment->fetch($request->razorpay_payment_id);
+
+            // Check if the payment is authorized
+            if ($payment->status === 'authorized' || $payment->status === 'captured') {
+                // Capture the payment
+                if ($payment->status === 'authorized') {
+                    $payment->capture(['amount' => $payment->amount]); // Amount is in paisa
+                }
+                // Store the payment details
+                $insert =  DB::table('payment_transactions')->insertGetId([
+                    'user_id'     => $request->user->id,
+                    'booking_id'  => $request->booking_id ?? null,
+                    'payment_id'  => $payment->id,
+                    'order_id'    => $payment->order_id ?? null,
+                    'method'      => $payment->method,
+                    'amount'      => $payment->amount / 100, // convert from paisa to INR
+                    'currency'    => $payment->currency,
+                    'status'      => $payment->status,
+                    'response'    => json_encode($payment),
+                    'created_at'  => now(), // manually add if timestamps aren't auto-handled
+                    'updated_at'  => now()
+                ]);
+
+                return response()->json(['success' => true, 'message' => 'Payment captured and saved.', 'data' => $insert]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Payment not authorized.']);
+            }
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    
+    public function handle(Request $request)
+{
+    // Remove this in production
+    echo 234234; die;
+
+    $data = $request->getContent();
+    $signature = $request->header('X-Razorpay-Signature');
+    $webhookSecret = env('RAZORPAY_WEBHOOK_SECRET');
+
+    // Verify signature
+    $expectedSignature = hash_hmac('sha256', $data, $webhookSecret);
+
+    if (!hash_equals($expectedSignature, $signature)) {
+        Log::warning('Razorpay webhook signature mismatch');
+        return response('Signature mismatch', 400);
+    }
+
+    $payload = json_decode($data, true);
+    $event = $payload['event'];
+
+    Log::info('Razorpay Webhook Event: ' . $event, $payload);
+
+    if ($event === 'payment.captured') {
+        $payment = $payload['payload']['payment']['entity'];
+        $paymentId = $payment['id'];
+        $amount = $payment['amount'] / 100; // convert to INR
+        $status = $payment['status'];
+
+        // ✅ Update your database
+        DB::table('payment_transactions')
+            ->where('payment_id', $paymentId)
+            ->update([
+                'status'     => $status,
+                'amount'     => $amount,
+                'response'   => json_encode($payment),
+                'updated_at' => now()
+            ]);
+
+    } elseif ($event === 'payment.failed') {
+        $payment = $payload['payload']['payment']['entity'];
+        $paymentId = $payment['id'];
+        $status = $payment['status'];
+
+        // Update DB with failure status
+        DB::table('payment_transactions')
+            ->where('payment_id', $paymentId)
+            ->update([
+                'status'     => $status,
+                'response'   => json_encode($payment),
+                'updated_at' => now()
+            ]);
+    }
+
+    return response()->json(['status' => 'ok']);
+
+}
 }
