@@ -129,7 +129,8 @@ class AuthController extends Controller
                     ->first();
 
                 $token = $this->createJwtToken($user, $role_details->title);
-                $kyc_detail = [];
+                $kyc_detail = DB::table('kyc_processes')->where('user_id', $user->id)->first();
+                // $kyc_detail = [];
                 if($role_details->id == 3){
                     // $kyc_detail = DB::table('kyc_processes')->where('user_id', $user->id)->first();
                     if(!$kyc_detail){
@@ -207,11 +208,12 @@ class AuthController extends Controller
     {
         $key = env('JWT_SECRET');  // Secret key
         $payload = [
-            'role' => $role, // Issuer of the token
-            'sub' => $user->id,           // Subject of the token (user ID)
-            'iat' => time(),              // Issued at time
-            'exp' => time() + 600000 * 600000       // Expiration time (1 hour)
+            'role' => $role,             // Issuer of the token
+            'sub' => $user->id,          // Subject of the token (user ID)
+            'iat' => time(),             // Issued at time
+            'exp' => time() + 31536000   // Expiration time (1 year)
         ];
+
 
         // Encode the token
         return JWT::encode($payload, $key, 'HS256');

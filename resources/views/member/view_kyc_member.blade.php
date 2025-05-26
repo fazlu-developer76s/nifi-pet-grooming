@@ -149,9 +149,9 @@
                                         <p><strong>Date of Birth:</strong> {{ @$member->aadhar_dob }}</p>
                                         <p><strong>Mobile No:</strong> {{ @$member->aadhar_mobile_no }}</p>
                                         <p><strong>Zipcode:</strong> {{ @$member->aadhar_zipcode }}</p>
-                                        <p><strong>Country:</strong> {{ @$member->aadhar_country }}</p>
+                                        {{-- <p><strong>Country:</strong> {{ @$member->aadhar_country }}</p>
                                         <p><strong>State:</strong> {{ @$member->aadhar_state }}</p>
-                                        <p><strong>City:</strong> {{ @$member->aadhar_city }}</p>
+                                        <p><strong>City:</strong> {{ @$member->aadhar_city }}</p> --}}
                                         <p><strong>Address:</strong> {{ @$member->aadhar_address }}</p>
                                         <p><strong>Status:</strong> {{ ($member->is_aadhar_verified == 1) ? "Verified":'Not Verified' ;}}</p>
                                     </div>
@@ -165,7 +165,7 @@
                                         <h4 class="text-center text-warning">PAN Info</h4>
                                         <hr>
                                         <p><strong>PAN Number:</strong> {{ @$member->pan_no }}</p>
-                                        <p><strong>Name on PAN:</strong> {{ @$member->pan_name }}</p>
+                                        {{-- <p><strong>Name on PAN:</strong> {{ @$member->pan_name }}</p> --}}
                                         <p><strong>Status:</strong> {{ ($member->is_pan_verified == 1) ? "Verified":'Not Verified' ;}}</p>
                                     </div>
                                 </div>
@@ -180,6 +180,13 @@
                                         <p><strong>IFSC Code:</strong> {{ @$member->ifsc_code }}</p>
                                         <p><strong>Account Holder's Name:</strong> {{ @$member->account_holder_name }}</p>
                                         <p><strong>Status:</strong> {{ ($member->is_bank_verified == 1) ? "Verified":'Not Verified' ;}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="bank-info">
+                                        <hr>
+                                        <h4 class="text-center text-info">Equipments</h4>
+                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->equipment_image ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
