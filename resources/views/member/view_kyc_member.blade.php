@@ -142,7 +142,7 @@
                                         <h4 class="text-center text-success">Aadhar Info</h4>
                                         <hr>
                                         <div class="aadhar-photo">
-                                            <strong>Aadhar Image:</strong> <img class="img-fluid rounded" src="data:image/jpeg;base64,{{ @$member->aadhar_profile_photo }}" alt="Aadhar Photo">
+                                            <strong>Aadhar Image:</strong> <img class="img-fluid rounded" src="{{ asset('storage/' . (optional(@$member)->aadhar_profile_photo ?: 'default-placeholder.jpg')) }}" alt="Aadhar Photo">
                                         </div>
                                         <p><strong>Aadhar No:</strong> {{ @$member->aadhar_no }}</p>
                                         <p><strong>Father's Name:</strong> {{ @$member->aadhar_father_name }}</p>

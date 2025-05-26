@@ -487,22 +487,22 @@ class ApiController extends Controller
             $user_update->is_current_location_verified = $request->is_current_location_verified;
         }
 
-        // if ($request->hasFile('equipment_image')) {
-        //     $file = $request->file('equipment_image');
-        //     $filePath = $file->store('kyc', 'public');
-        //     $user_update->equipment_image = $filePath;
-        // }
-
         if ($request->hasFile('equipment_image')) {
-            $filePaths = [];
-
-            foreach ($request->file('equipment_image') as $file) {
-                $filePaths[] = $file->store('kyc', 'public');
-            }
-
-            // Store file paths as JSON or an array depending on your database structure
-            $user_update->equipment_image = json_encode($filePaths);
+            $file = $request->file('equipment_image');
+            $filePath = $file->store('kyc', 'public');
+            $user_update->equipment_image = $filePath;
         }
+
+        // if ($request->hasFile('equipment_image')) {
+        //     $filePaths = [];
+
+        //     foreach ($request->file('equipment_image') as $file) {
+        //         $filePaths[] = $file->store('kyc', 'public');
+        //     }
+
+        //     // Store file paths as JSON or an array depending on your database structure
+        //     $user_update->equipment_image = json_encode($filePaths);
+        // }
 
 
 
