@@ -15,6 +15,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ReferController;
+use App\Http\Controllers\TshirtController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -79,6 +80,13 @@ Route::middleware(['auth', 'checkRole'])->group(function () {
     Route::get('/pet-category/{id}', [PetCategoryController::class, 'edit'])->name('category.edit');
     Route::post('/pet-category/update', [PetCategoryController::class, 'update'])->name('category.update');
     Route::delete('/category/delete/{id}', [PetCategoryController::class, 'destroy'])->name('category.destroy');
+
+     // Route
+    Route::get('/tshirt', [TshirtController::class, 'index'])->name('tshirt');
+    Route::match(['get', 'post'], '/tshirt/create', [TshirtController::class, 'create'])->name('tshirt.create');
+    Route::get('/tshirt/{id}', [TshirtController::class, 'edit'])->name('tshirt.edit');
+    Route::post('/tshirt/update', [TshirtController::class, 'update'])->name('tshirt.update');
+    Route::delete('/tshirt/delete/{id}', [TshirtController::class, 'destroy'])->name('tshirt.destroy');
 
 
 

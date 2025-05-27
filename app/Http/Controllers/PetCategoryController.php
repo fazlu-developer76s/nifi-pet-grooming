@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Storage;
 
 class PetCategoryController extends Controller
 {
-    public function index()
+        public function index()
     {
         $title = "Pet Category List";
         $allcategory = PetCategory::where('status', '!=', '3')->orderBy('id', 'desc')->get();
         return view('pet_category.index', compact('title', 'allcategory'));
+
     }
 
     public function create(Request $request)

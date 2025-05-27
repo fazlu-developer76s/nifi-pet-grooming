@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\Global_helper as GlobalHelper;
+use App\Models\Tshirt;
 use Illuminate\Support\Facades\Http;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -349,6 +350,23 @@ class ApiController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'KYC details not found'
+            ], 401);
+        }
+    }
+
+    public function get_tshirt(Request $request)
+    {
+        $tshirt = Tshirt::where('status', 1)->get();
+        if ($tshirt) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'T-Shirt size List',
+                'data' => $tshirt
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'T-shirt not found'
             ], 401);
         }
     }

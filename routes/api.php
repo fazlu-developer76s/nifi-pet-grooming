@@ -44,6 +44,7 @@ Route::middleware(['jwt'])->group(function () {
     Route::post('user/update-kyc',[ApiController::class, 'update_kyc']);
     Route::get('user/get-kyc',[ApiController::class, 'get_kyc']);
     Route::post('user/get-kyc',[ApiController::class, 'get_kyc']);
+    Route::get('user/get-t-shirt',[ApiController::class, 'get_tshirt']);
     Route::post('user/update-profile-user',[ApiController::class, 'update_profile']);
     Route::post('user/add-helper',[ApiController::class, 'add_helper']);
     Route::get('user/get-helper',[ApiController::class, 'get_helper']);
