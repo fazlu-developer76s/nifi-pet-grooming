@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use Illuminate\Http\Request;
 use App\Models\Company;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class CompanyController extends Controller
 {
@@ -59,5 +62,29 @@ class CompanyController extends Controller
         // Redirect with success message
         return redirect()->route('company.edit', $company->id)
                          ->with('success', 'Company information updated successfully.');
+    }
+
+     public function booking($id)
+    {
+        $title = 'Booking List';
+        $bookings = DB::table('tbl_pet_bookings as a')
+            ->leftJoin('users as b', 'a.customer_id', '=', 'b.id')
+            ->leftJoin('users as c', 'a.accept_user_id', '=', 'c.id')
+            ->select('a.*', 'b.name as post_user_name', 'c.name as accept_user_name')
+            ->where('a.booking_status', $id)
+            ->where('a.status', '!=', 3)->orderBy('a.id', 'desc')
+            ->get();
+        return view('company.booking_list', compact('bookings'));
+    }
+
+    public function t_shirt_order()
+    {
+        $title = 'T-Shirt Order List';
+        $orders = DB::table('t_shirt_transaction as a')
+            ->leftJoin('users as b', 'a.user_id', '=', 'b.id')
+            ->select('a.*', 'b.name as user_name', 'b.email as user_email', 'b.mobile_no as user_mobile_no')
+            ->orderBy('a.id', 'desc')
+            ->get();
+        return view('company.tshirt_order_list', compact('orders'));
     }
 }

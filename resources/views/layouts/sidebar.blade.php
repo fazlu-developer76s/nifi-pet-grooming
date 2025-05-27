@@ -65,6 +65,49 @@
             </div>
             <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
                     <div class="menu-icon"> <i class="fas fa-list"></i> </div>
+                    <div class="menu-text">Bookings</div>
+                    <div class="menu-caret"></div>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{{ route('booking', 1) }}" class="menu-link ">
+                            <div class="menu-text"> Open List</div>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{{ route('booking', 2) }}" class="menu-link ">
+                            <div class="menu-text"> Accept Booking</div>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{{ route('booking', 3) }}" class="menu-link ">
+                            <div class="menu-text"> Complete Booking</div>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{{ route('booking', 4) }}" class="menu-link ">
+                            <div class="menu-text"> Cancel Booking</div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+              <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
+                    <div class="menu-icon"> <i class="fas fa-list"></i> </div>
+                    <div class="menu-text">T-Shirt Order</div>
+                    <div class="menu-caret"></div>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{{ route('t-shirt-order') }}" class="menu-link ">
+                            <div class="menu-text"> T-shirt Order List</div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            {{-- <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
+                    <div class="menu-icon"> <i class="fas fa-list"></i> </div>
                     <div class="menu-text">Refer & Earn Setup</div>
                     <div class="menu-caret"></div>
                 </a>
@@ -80,7 +123,7 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link d-none">
                     <div class="menu-icon"> <i class="fas fa-list"></i> </div>
@@ -169,33 +212,33 @@
                 </div>
             </div>
             <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
-                <div class="menu-icon"> <i class="fas fa-list"></i> </div>
-                <div class="menu-text">Manage Pages</div>
-                <div class="menu-caret"></div>
-            </a>
-            <div class="menu-submenu">
-                <div class="menu-item">
-                    <a href="{{ route('pages.edit', 1) }}" class="menu-link ">
-                        <div class="menu-text">Term & Condition</div>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a href="{{ route('pages.edit', 2) }}" class="menu-link ">
-                        <div class="menu-text">Privacy Policy</div>
-                    </a>
-                </div>
-                  <div class="menu-item">
-                    <a href="{{ route('pages.edit', 3) }}" class="menu-link ">
-                        <div class="menu-text">About Us</div>
-                    </a>
-                </div>
-                  <div class="menu-item">
-                    <a href="{{ route('pages.edit', 4) }}" class="menu-link ">
-                        <div class="menu-text">Return & Refund</div>
-                    </a>
+                    <div class="menu-icon"> <i class="fas fa-list"></i> </div>
+                    <div class="menu-text">Manage Pages</div>
+                    <div class="menu-caret"></div>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item">
+                        <a href="{{ route('pages.edit', 1) }}" class="menu-link ">
+                            <div class="menu-text">Term & Condition</div>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{{ route('pages.edit', 2) }}" class="menu-link ">
+                            <div class="menu-text">Privacy Policy</div>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{{ route('pages.edit', 3) }}" class="menu-link ">
+                            <div class="menu-text">About Us</div>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{{ route('pages.edit', 4) }}" class="menu-link ">
+                            <div class="menu-text">Return & Refund</div>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
             <div class="menu-item has-sub"> <a href="javascript:;" class="menu-link ">
                     <div class="menu-icon"> <i class="fas fa-list"></i> </div>
                     <div class="menu-text">Site Setting</div>

@@ -1,5 +1,4 @@
 @extends('layouts/app')
-
 @section('content')
     <style>
         strong {
@@ -65,59 +64,48 @@
             }
         }
     </style>
-
-    @if (isset($get_lead))
+    @if (isset($get_booking))
         @php $form_action = "lead.update"; @endphp
     @else
         @php $form_action = "lead.create"; @endphp
     @endif
     <input type="hidden" id="user_id" value="{{ Auth::user()->id }}">
-    <input type="hidden" id="lead_id" value="{{ isset($get_lead) ? $get_lead->id : ' ' }}">
+    <input type="hidden" id="lead_id" value="{{ isset($get_booking) ? $get_booking->id : ' ' }}">
     <div class="container-fluid">
         <div id="content" class="app-content">
             <div class="d-flex align-items-center mb-3">
                 <div>
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
-                        <li class="breadcrumb-item"><a href="javascript:;">Lead</a></li>
-                        <li class="breadcrumb-item active"><i class="fa fa-arrow-back"></i> Create Lead</li>
+                        <li class="breadcrumb-item"><a href="javascript:;">Booking</a></li>
+                        <li class="breadcrumb-item active"><i class="fa fa-arrow-back"></i> View Booking</li>
                     </ol>
-                    <h1 class="page-header mb-0">Lead</h1>
+                    <h1 class="page-header mb-0">Booking</h1>
                 </div>
             </div>
-
             <!-- Row for equal division -->
             <div class="row">
                 <!-- Form Section -->
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <div class="card">
                         <div class="card-header bg-primary text-white">
-                            <h4 class="mb-0">Lead Information</h4>
+                            <h4 class="mb-0">Booking Information</h4>
                         </div>
-
-                        @switch($get_lead->loan_status)
+                        @switch($get_booking->booking_status)
                             @case(1)
                                 @php $loan_status = "Pending"; @endphp
                             @break
 
                             @case(2)
-                                @php $loan_status = "View"; @endphp
+                                @php $loan_status = "Accept"; @endphp
                             @break
 
                             @case(3)
-                                @php $loan_status = "Under_Discussion"; @endphp
+                                @php $loan_status = "Complete"; @endphp
                             @break
 
                             @case(4)
-                                @php $loan_status = "Pending_Kyc"; @endphp
-                            @break
-
-                            @case(5)
-                                @php $loan_status = "Qualified"; @endphp
-                            @break
-
-                            @case(6)
-                                @php $loan_status = "Rejected"; @endphp
+                                @php $loan_status = "Cancel"; @endphp
                             @break
 
                             @default
@@ -125,213 +113,294 @@
                         @endswitch
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <table class="table table-bordered">
-                                        <tbody>
-                                            <tr>
-                                                <td><strong>Lead Date:</strong></td>
-                                                <td>{{ \Carbon\Carbon::parse($get_lead->lead_create_date)->format('d F Y h:i A') }}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Work:</strong></td>
-                                                <td>{{ $get_lead->work ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Work Address:</strong></td>
-                                                <td>{{ $get_lead->work_address ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Shop/Thiya:</strong></td>
-                                                <td>{{ $get_lead->shop_thiya ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Home Address:</strong></td>
-                                                <td>{{ $get_lead->home_address ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Loan Amount:</strong></td>
-                                                <td>{{ $get_lead->loan_amount ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Balance :</strong></td>
-                                                <td>{{ $get_lead->balance ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Old Loan :</strong></td>
-                                                <td>{{ $get_lead->old_loan ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>File No. :</strong></td>
-                                                <td>{{ $get_lead->old_loan ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>R. N. No. :</strong></td>
-                                                <td>{{ $get_lead->old_loan ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Accountant Sign :</strong></td>
-                                                <td>{{ $get_lead->old_loan ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Guarantor Name:</strong></td>
-                                                <td>{{ $get_lead->old_loan ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Remark:</strong></td>
-                                                <td>{{ $get_lead->reason_of_loan ?? 'N/A' }}</td>
-                                            </tr>
-
-
-
-
-
-
-
-                                            <tr>
-                                                <td><strong>Created By:</strong></td>
-                                                <td>{{ isset($get_user->name) ? ucwords($get_user->name) : 'N/A' }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-md-6">
-                                    <table class="table table-bordered">
-                                        <tbody>
-                                            <tr>
-                                                <td><strong>Name:</strong></td>
-                                                <td>{{ ucwords($get_lead->name ?? 'N/A') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Phone:</strong></td>
-                                                <td>{{ $get_lead->mobile ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Cheque:</strong></td>
-                                                <td>{{ $get_lead->cheque ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Home Type:</strong></td>
-                                                <td>{{ $get_lead->home_type ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>File Hain:</strong></td>
-                                                <td>{{ $get_lead->file_hai ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Tut:</strong></td>
-                                                <td>{{ $get_lead->tut ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>+/-Day:</strong></td>
-                                                <td>{{ $get_lead->plus_day ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Loan Type:</strong></td>
-                                                <td>{{ $get_lead->loan_type ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Sr No:</strong></td>
-                                                <td>{{ $get_lead->ser_no ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Amount :</strong></td>
-                                                <td>{{ $get_lead->ser_no ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Guarantor:</strong></td>
-                                                <td>{{ $get_lead->guarantor ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Service :</strong></td>
-                                                <td>{{ $get_lead->service_name ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Lead Status:</strong></td>
-                                                <td id="fetch_loan_status">
-                                                    {{ isset($loan_status) ? str_replace('_', ' ', $loan_status) : 'N/A' }}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Package Name:</strong></td>
+                                            <td>{{ ucwords($get_booking->package_name ?? 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Package Type:</strong></td>
+                                            <td>{{ $get_booking->package_type ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Booking Time:</strong></td>
+                                            <td>{{ \Carbon\Carbon::parse(@$get_booking->booking_time)->format('h:i A') ?? 'N/A' }}
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Booking Date:</strong></td>
+                                            <td>{{ \Carbon\Carbon::parse($get_booking->created_at)->format('d F Y h:i A') }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Booking Amount:</strong></td>
+                                            <td>{{ $get_booking->booking_amount ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Admin Tax Amount:</strong></td>
+                                            <td>{{ $get_booking->tax_amount ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total Amount:</strong></td>
+                                            <td>{{ $get_booking->total_amount ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Booking Status:</strong></td>
+                                            <td id="fetch_loan_status">
+                                                {{ isset($loan_status) ? str_replace('_', ' ', $loan_status) : 'N/A' }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
-                @if ($get_lead->loan_status >= 3)
-                    <div class="col-md-8">
-                    @else
-                        <div class="col-md-12">
-                @endif
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Booking Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>User Name:</strong></td>
+                                            <td>{{ ucwords($get_booking->post_user_name ?? 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>User Image:</strong></td>
+                                            <td>
 
-                <div class="card">
-                    <div class="card-header bg-info text-white">
-                        <h4 class="mb-0">Activity Log</h4>
+                                                @if (!empty($get_booking->post_user_image))
+                                                       <img src="{{ asset('storage/' . $get_booking->post_user_image) }}"
+                                                           alt="Pet Image" width="100">
+                                                   @else
+                                                       N/A
+                                                   @endif
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>User Email:</strong></td>
+                                            <td>{{ ucwords($get_booking->post_user_email ?? 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>User Mobile :</strong></td>
+                                            <td>{{ ucwords($get_booking->post_user_mobile_no ?? 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong> Accept User Name:</strong></td>
+                                            <td>{{ ucwords($get_booking->accept_user_name ?? 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong> Accept User Image:</strong></td>
+                                            <td>
+
+                                                @if (!empty($get_booking->accept_user_image))
+                                                       <img src="{{ asset('storage/' . $get_booking->accept_user_image) }}"
+                                                           alt="Pet Image" width="100">
+                                                   @else
+                                                       N/A
+                                                   @endif
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong> Accept User Email:</strong></td>
+                                            <td>{{ ucwords($get_booking->accept_user_email ?? 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong> Accept User Mobile :</strong></td>
+                                            <td>{{ ucwords($get_booking->accept_user_mobile_no ?? 'N/A') }}</td>
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <ul class="list-group" id="note_html">
-                            <!-- Notes will be appended here dynamically -->
-                        </ul>
-                        @if ($get_lead->loan_status < 3)
-                            <button class="btn btn-outline-primary mt-5"
-                                onclick="startDisscussion({{ isset($get_lead->id) ? $get_lead->id : ' ' }}, {{ Auth::user()->id }}, '');">Start
-                                Discussion</button>
-                        @endif
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Pet Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Pet Name:</strong></td>
+                                            <td>{{ $get_booking->pet_name ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pet Image:</strong></td>
+                                            <td>
+                                                @if (!empty($get_booking->pet_image))
+                                                    <img src="{{ asset('storage/' . $get_booking->pet_image) }}"
+                                                        alt="Pet Image" width="100">
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pet Gender:</strong></td>
+                                            <td>{{ $get_booking->pet_gender ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pet Type:</strong></td>
+                                            <td>{{ $get_booking->pet_type ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pet Breed:</strong></td>
+                                            <td>{{ $get_booking->pet_breed ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pet Weight:</strong></td>
+                                            <td>{{ $get_booking->pet_weight ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pet Age:</strong></td>
+                                            <td>{{ $get_booking->pet_age ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pet Aggression:</strong></td>
+                                            <td>{{ $get_booking->pet_aggression ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pet Vaccinated:</strong></td>
+                                            <td>{{ $get_booking->pet_vaccinated ?? 'N/A' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Address Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Flat / House No.:</strong></td>
+                                        <td>{{ $get_booking->flat_house_no ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Area / Sector / Locality:</strong></td>
+                                        <td>{{ $get_booking->area_sector_locality ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>City / District:</strong></td>
+                                        <td>{{ $get_booking->city_district ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>State:</strong></td>
+                                        <td>{{ $get_booking->state ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Pincode:</strong></td>
+                                        <td>{{ $get_booking->pincode ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Complete Address:</strong></td>
+                                        <td>{{ $get_booking->complete_address ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Email Address:</strong></td>
+                                        <td>{{ $get_booking->email_address ?? 'N/A' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Payment In Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Payment ID:</strong></td>
+                                            <td>{{ $get_booking->payment_in_id ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Order ID:</strong></td>
+                                            <td>{{ $get_booking->payment_in_order_id ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Payment Method:</strong></td>
+                                            <td>{{ $get_booking->payment_in_method ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Amount Paid:</strong></td>
+                                            <td>₹{{ number_format($get_booking->payment_in_amount, 2) ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Payment Status:</strong></td>
+                                            <td>{{ ucwords($get_booking->payment_in_status ?? 'N/A') }}</td>
+                                        </tr>
+                                           <tr>
+                                            <td><strong>Payment Date:</strong></td>
+                                            <td>{{ \Carbon\Carbon::parse($get_booking->payment_in_date)->format('d F Y h:i A') }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Payment Out Information</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Payment ID:</strong></td>
+                                            <td>{{ $get_booking->payment_out_id ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Order ID:</strong></td>
+                                            <td>{{ $get_booking->payment_out_order_id ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Payment Method:</strong></td>
+                                            <td>{{ $get_booking->payment_out_method ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Amount Paid:</strong></td>
+                                            <td>₹{{ number_format($get_booking->payment_out_amount, 2) ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Payment Status:</strong></td>
+                                            <td>{{ ucwords($get_booking->payment_out_status ?? 'N/A') }}</td>
+                                        </tr>
+                                           <tr>
+                                            <td><strong>Payment Date:</strong></td>
+                                            <td>{{ \Carbon\Carbon::parse($get_booking->payment_out_date)->format('d F Y h:i A') }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            @if ($get_lead->loan_status >= 3)
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header bg-info text-white">
-                            <h4 class="mb-0">Notes</h4>
-                        </div>
-                        <div class="card-body">
-                            <form action="#" method="POST">
-                                @csrf
-                                <!-- Textarea Field -->
-                                <div class="mb-3">
-                                    <label for="notes" class="form-label">Notes</label>
-                                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Enter your notes here"></textarea>
-
-                                    <input type="hidden" id="hidden_id">
-                                </div>
-                                <!-- Select Field -->
-                                <div class="mb-3">
-                                    <label for="option" class="form-label">Select Status</label>
-                                    <select class="form-select get_status" id="status" name="option" onchange="CheckStatus()">
-                                        <option selected>Select an option</option>
-                                        <option value="3" {{ $get_lead->loan_status == 3 ? 'selected' : '' }}>Under
-                                            Discussion</option>
-                                        {{-- <option value="4" {{ $get_lead->loan_status == 4 ? 'selected' : '' }}>Pending For KYC</option> --}}
-                                        <option value="5" {{ $get_lead->loan_status == 5 ? 'selected' : '' }}>
-                                            Qualified</option>
-                                        <option value="6" {{ $get_lead->loan_status == 6 ? 'selected' : '' }}>Rejected
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="mb-3 d-none select_route_id">
-                                    <label for="option" class="form-label">Select Route</label>
-                                    <select class="form-control custom-select-icon @error('route_id') is-invalid @enderror" name="route_id" id="select_route_id">
-                                        <option value="">Select Route </option>
-                                    @if($get_route)
-                                        @foreach ($get_route as $route)
-                                            <option value="{{ $route->id }}" >{{ ucwords($route->route) . ' ('. $route->title . ")"  }}</option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                                </div>
-                                <!-- Submit Button -->
-                                <span type="submit" class="btn btn-primary" onclick="return SaveNotes();">Submit</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endif
         </div>
     </div>
     </div>

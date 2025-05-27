@@ -487,10 +487,22 @@ class ApiController extends Controller
             $user_update->is_current_location_verified = $request->is_current_location_verified;
         }
 
-        if ($request->hasFile('equipment_image')) {
-            $file = $request->file('equipment_image');
+        if ($request->hasFile('trimer')) {
+            $file = $request->file('trimer');
             $filePath = $file->store('kyc', 'public');
-            $user_update->equipment_image = $filePath;
+            $user_update->trimer = $filePath;
+        }
+
+        if ($request->hasFile('blower')) {
+            $file = $request->file('blower');
+            $filePath = $file->store('kyc', 'public');
+            $user_update->blower = $filePath;
+        }
+
+        if ($request->hasFile('scissor')) {
+            $file = $request->file('scissor');
+            $filePath = $file->store('kyc', 'public');
+            $user_update->scissor = $filePath;
         }
 
         // if ($request->hasFile('equipment_image')) {
@@ -714,7 +726,6 @@ class ApiController extends Controller
 
     public function create_booking(Request $request)
     {
-
         $rules = array(
             'cart_id'       => 'required',
             'pet_id'       => 'required',
@@ -732,6 +743,9 @@ class ApiController extends Controller
             for ($i = 0; count($request->cart_id) > $i; $i++) {
                 $cart_id = '';
                 $cart_id = $request->cart_id[$i];
+
+
+
                 $address_id = $request->address_id;
                 $booking_date = $request->booking_date;
                 $booking_time = $request->booking_time;
@@ -747,6 +761,10 @@ class ApiController extends Controller
                 if (!$get_service) {
                     return response()->json(['status' => 'Error', 'message' => ' Service Not Found']);
                 }
+                $get_pet = DB::table('tbl_pet')->where('id', $request->pet_id)->where('status', 1)->first();
+                if (!$get_pet) {
+                    return response()->json(['status' => 'Error', 'message' => 'Pet Not Found']);
+                }
                 $get_booking_amount  = $get_cart->charge;
                 $get_tax  = $get_service->tax;
                 $get_tax_amount = $get_service->$get_booking_amount * ($get_tax / 100);
@@ -760,8 +778,20 @@ class ApiController extends Controller
                     'cart_id' => $cart_id,
                     'package_id' => $get_cart->service_id,
                     'payment_id' => $request->payment_id,
+
                     'pet_id' => $request->pet_id,
+                    'pet_name' => $get_pet->pet_name,
+                    'pet_image' => $get_pet->image,
+                    'pet_gender' => $get_pet->gender,
+                    'pet_type' => $get_pet->pet_type,
+                    'pet_breed' => $get_pet->breed,
+                    'pet_weight' => $get_pet->weight,
+                    'pet_age' => $get_pet->age,
+                    'pet_aggression' => $get_pet->aggression,
+                    'pet_vaccinated' => $get_pet->vaccinated,
+
                     'package_name' => $get_service->title,
+                    'package_type' => $get_cart->charge,
                     'booking_date' => $booking_date,
                     'booking_time' => $booking_time,
                     'booking_amount' => $get_service->$get_booking_amount,
@@ -1114,7 +1144,7 @@ class ApiController extends Controller
     }
 
 
-    public function payment(Request $request)
+    public function tshirt_payment(Request $request)
     {
 
         $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
@@ -1129,9 +1159,9 @@ class ApiController extends Controller
                     $payment->capture(['amount' => $payment->amount]); // Amount is in paisa
                 }
                 // Store the payment details
-                $insert =  DB::table('payment_transactions')->insertGetId([
+                $insert =  DB::table('t_shirt_transaction')->insertGetId([
                     'user_id'     => $request->user->id,
-                    'booking_id'  => $request->booking_id ?? null,
+                    't_shirt_size'     => $request->t_shirt_size,
                     'payment_id'  => $payment->id,
                     'order_id'    => $payment->order_id ?? null,
                     'method'      => $payment->method,

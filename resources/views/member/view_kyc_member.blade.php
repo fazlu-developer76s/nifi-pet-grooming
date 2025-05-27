@@ -184,9 +184,14 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="bank-info">
+                                         <h4 class="text-center text-info">Equipment Images</h4>
                                         <hr>
-                                        <h4 class="text-center text-info">Equipments</h4>
-                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->equipment_image ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
+                                        <h4 class="text-center text-info">Trimmer</h4>
+                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->trimer ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
+                                        <h4 class="text-center text-info">Blower</h4>
+                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->blower ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
+                                        <h4 class="text-center text-info">Scissor</h4>
+                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->scissor ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
                                     </div>
                                 </div>
                                 <div class="col-md-6">

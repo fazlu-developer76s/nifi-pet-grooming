@@ -38,6 +38,7 @@ Route::post('notification', [ApiController::class, 'sendNotificationToUser']);
 Route::middleware(['jwt'])->group(function () {
        Route::post('user/create-razorpay-order', [ApiController::class, 'createOrder']);
     Route::post('user/create-razorpay-payment', [ApiController::class, 'payment']);
+    Route::post('user/create-tshirt-payment', [ApiController::class, 'tshirt_payment']);
     Route::post('user/get-aadhar-otp',[ApiController::class, 'get_aadhar_otp']);
     Route::post('user/check-aadhar-otp',[ApiController::class, 'checkaadharotp']);
     Route::post('user/update-kyc',[ApiController::class, 'update_kyc']);

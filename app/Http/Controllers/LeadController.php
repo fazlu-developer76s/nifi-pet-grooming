@@ -112,19 +112,18 @@ class LeadController extends Controller
 
     public function view($id)
     {
-        $get_route = Route::where('status', 1)->get();
-        $user_id = Auth::user()->id;
-        $get_note = DB::table('notes')->where('loan_request_id', $id)->where('title', 'View Lead')->where('user_id', $user_id)->first();
 
-        if (!$get_note) {
-            DB::table('notes')->insert(['loan_request_id' => $id, 'user_id' => $user_id, 'loan_status' => 2, 'title' => "View Lead"]);
-            Loan_request::where('id', $id)->update(['loan_status' => 2]);
-        }
-        $title = "View Lead";
-        $get_lead_1 = Loan_request::where('status', '!=', 3)->where('id', $id)->first();
-        $get_user = Member::where('status', 1)->where('id', $get_lead_1->user_id)->first();
-        $get_lead = DB::table('loan_requests')->leftJoin('users', 'loan_requests.user_id', '=', 'users.id')->leftJoin('providers', 'providers.id', '=', 'loan_requests.service_no')->select('loan_requests.*', 'users.name as username', 'providers.title as service_name')->where('loan_requests.status', '!=', '3')->where('loan_requests.loan_status', '!=', 5)->where('loan_requests.id', $id)->orderBy('loan_requests.id', 'desc')->first();
-        return view('lead.view', compact('title', 'get_lead', 'get_user','get_route'));
+        $title = "View Booking";
+           $get_booking = DB::table('tbl_pet_bookings as a')
+            ->leftJoin('users as b', 'a.customer_id', '=', 'b.id')
+            ->leftJoin('users as c', 'a.accept_user_id', '=', 'c.id')
+            ->leftJoin('payment_transactions as d', 'a.id', '=', 'd.payment_id')
+            ->leftJoin('payment_out as e', 'a.id', '=', 'e.booking_id')
+            ->select('a.*','b.name as post_user_name','b.email as post_user_email','b.mobile_no as post_user_mobile_no','b.image as post_user_image','c.name as accept_user_name','c.email as accept_user_email','c.mobile_no as accept_user_mobile_no','c.image as accept_user_image','d.order_id as payment_in_order_id', 'd.payment_id as payment_in_id', 'd.method as payment_in_method', 'd.amount as payment_in_amount','d.status as payment_in_status','d.created_at as payment_in_date','d.order_id as payment_out_order_id', 'd.payment_id as payment_out_id', 'd.method as payment_out_method', 'd.amount as payment_out_amount','d.status as payment_out_status','d.created_at as payment_out_date')
+            ->where('a.id', $id)
+            ->where('a.status', '!=', 3)->orderBy('a.id', 'desc')
+            ->first();
+        return view('lead.view', compact('title', 'get_booking'));
     }
 
     public function kyclead_view($id)

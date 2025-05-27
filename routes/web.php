@@ -34,6 +34,9 @@ Route::middleware(['auth', 'checkRole'])->group(function () {
     Route::post('/store-roles', [RoleController::class, 'store_roles'])->name('store.roles');
     Route::get('/edit-roles/{id}', [RoleController::class, 'edit_roles'])->name('edit.roles');
     Route::delete('/destroy-roles/{id}', [RoleController::class, 'destroy_roles'])->name('destroy.roles');
+    Route::get('booking-list/{id}', [CompanyController::class, 'booking'])->name('booking');
+    Route::get('t-shirt-order', [CompanyController::class, 't_shirt_order'])->name('t-shirt-order');
+
 
     // Member Routes
     Route::get('/member', [MemberController::class, 'index'])->name('member');
