@@ -826,10 +826,24 @@ class ApiController extends Controller
                     'complete_address' => $get_address->complete_address,
                     'email_address' => $get_address->email_address
                 ]);
-                $remove_cart = DB::table('tbl_cart')->where('id', $cart_id)->update(['status' => 3]);
-                GlobalHelper::SaveNotification($insert_booking_id, $request->user->id, 1, 'buy package');
+                $get_service = DB::table('tbl_pet_bookings')->where('id', $insert_booking_id)->first();
+                $remove_cart = DB::table('tbl_cart')->where('id', $cart_id)->delete();
+                GlobalHelper::SaveNotification($insert_booking_id, $request->user->id, 1, $get_service->package_name, 'New Booking Created');
                 $otp = $this->userOTP($request->user->mobile_no);
                 DB::table('tbl_pet_bookings')->where('id', $insert_booking_id)->update(['otp' => $otp]);
+
+                $get_groomer = DB::table('users')->where('role_id', 3)->where('status', 1)->get();
+                foreach ($get_groomer as $groomer) {
+                    $this->sendNotificationToUser($groomer->fcm_token,$get_service->package_name, "New Booking Found");
+                     DB::table('tbl_notification')->insert([
+                        'booking_id' => $insert_booking_id,
+                        'user_id' => $groomer->id,
+                        'type' => 5,
+                        'subject' => $get_service->package_name,
+                        'description' => 'New booking found for ' . $get_service->package_name,
+                    ]);
+                }
+
             }
         }
 
@@ -962,7 +976,16 @@ class ApiController extends Controller
             if ($request->booking_status == 4) {
                 $subject = 'complete booking';
             }
-            GlobalHelper::SaveNotification($request->id, $request->user->id, $request->booking_status, $subject);
+            $user = DB::table('users')->where('id', $get_otp->user_id)->first();
+            GlobalHelper::SaveNotification($request->id, $request->user->id, $request->booking_status, $get_otp->package_name, 'Booking ' . $subject);
+            $this->sendNotificationToUser($user->fcm_token,$get_otp->package_name, "Your booking has been ' . $subject . ' by ' . $user->name");
+                DB::table('tbl_notification')->insert([
+                'booking_id' => $get_otp->id,
+                'user_id' => $get_otp->user_id,
+                'type' => 5,
+                'subject' => $get_otp->package_name,
+                'description' => 'Your booking has been ' . $subject . ' by ' . $user->name,
+            ]);
         }
         return response()->json(['status' => 'OK', 'message' => 'Booking status updated successfully']);
     }
@@ -990,7 +1013,7 @@ class ApiController extends Controller
 
     public function add_to_cart(Request $request, $id, $price)
     {
-        $check_cart = DB::table('tbl_cart')->where('user_id', $request->user->id)->where('service_id', $id)->where('charge',$price)->first();
+        $check_cart = DB::table('tbl_cart')->where('user_id', $request->user->id)->where('service_id', $id)->where('charge',$price)->where('status',1)->first();
         if ($check_cart) {
             // $add_cart = DB::table('tbl_cart')
             //     ->where('id', $check_cart->id)
@@ -1315,15 +1338,9 @@ class ApiController extends Controller
         return response()->json(['status' => 'ok']);
     }
 
-    public function sendNotificationToUser(Request $request)
+    public function sendNotificationToUser($fcm_token,$title,$body)
     {
-        // Validate the request input
-        $request->validate([
-            'fcm_token' => 'required|string',
-            'title' => 'required|string',
-            'body' => 'required|string',
-        ]);
-        // Secure path to your service account key
+
 
         $factory = (new Factory)->withServiceAccount(storage_path('app\firebase\google-services.json'));
 
@@ -1331,12 +1348,23 @@ class ApiController extends Controller
         $messaging = $factory->createMessaging();
 
         // Create the notification
-        $notification = Notification::create($request->title, $request->body);
+        $notification = Notification::create($title, $body);
 
         // Create the message
-        $message = CloudMessage::withTarget('token', $request->fcm_token)
-            ->withNotification($notification)
-            ->withData(['priority' => 'high']);
+        // $message = CloudMessage::withTarget('token', $fcm_token)
+        //     ->withNotification($notification)
+        //     ->withData(['priority' => 'high']);
+
+            $message = CloudMessage::withTarget('token', $fcm_token)
+    ->withNotification(Notification::create($title, $body))
+    ->withData([
+        'title' => $title,
+        'body' => $body,
+        'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+        'priority' => 'high'
+    ]);
+
+
 
         try {
             // Send the notification
