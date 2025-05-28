@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Helpers\Global_helper as GlobalHelper;
 use App\Models\Tshirt;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
@@ -940,6 +941,13 @@ class ApiController extends Controller
             return $validate;
         }
         if ($request->user->role_id != 5) {
+            if($request->booking_status == 4){
+                $get_otp = DB::table('tbl_pet_bookings')->where('id', $request->id)->where('status', 1)->where('is_otp_verified',2)->where('otp',$request->otp)->first();
+                if (!$get_otp) {
+                    return response()->json(['status' => 'Error', 'message' => 'Invalid OTP']);
+                }
+                DB::table('tbl_pet_bookings')->where('id', $request->id)->update(['is_otp_verified' => 1]);
+            }
             DB::table('tbl_pet_bookings')
                 ->where('id', $request->id)
                 ->update(['accept_user_id' => $request->user->id, 'booking_status' => $request->booking_status]);
@@ -1162,6 +1170,43 @@ class ApiController extends Controller
     }
 
 
+     public function payment(Request $request)
+    {
+
+        $api = new Api(env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
+        try {
+            // Fetch the payment details
+            $payment = $api->payment->fetch($request->razorpay_payment_id);
+
+            // Check if the payment is authorized
+            if ($payment->status === 'authorized' || $payment->status === 'captured') {
+                // Capture the payment
+                if ($payment->status === 'authorized') {
+                    $payment->capture(['amount' => $payment->amount]); // Amount is in paisa
+                }
+                // Store the payment details
+                $insert =  DB::table('payment_transactions')->insertGetId([
+                    'user_id'     => $request->user->id,
+                    'payment_id'  => $payment->id,
+                    'order_id'    => $payment->order_id ?? null,
+                    'method'      => $payment->method,
+                    'amount'      => $payment->amount / 100, // convert from paisa to INR
+                    'currency'    => $payment->currency,
+                    'status'      => $payment->status,
+                    'response'    => json_encode($payment),
+                    'created_at'  => now(), // manually add if timestamps aren't auto-handled
+                    'updated_at'  => now()
+                ]);
+
+                return response()->json(['success' => true, 'message' => 'Payment captured and saved.', 'data' => $insert]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Payment not authorized.']);
+            }
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
     public function tshirt_payment(Request $request)
     {
 
@@ -1203,8 +1248,6 @@ class ApiController extends Controller
     public function handle(Request $request)
     {
         // Remove this in production
-        echo 234234;
-        die;
 
         $data = $request->getContent();
         $signature = $request->header('X-Razorpay-Signature');
@@ -1238,6 +1281,15 @@ class ApiController extends Controller
                     'response'   => json_encode($payment),
                     'updated_at' => now()
                 ]);
+                    DB::table('t_shirt_transaction')
+                ->where('payment_id', $paymentId)
+                ->update([
+                    'status'     => $status,
+                    'amount'     => $amount,
+                    'response'   => json_encode($payment),
+                    'updated_at' => now()
+                ]);
+
         } elseif ($event === 'payment.failed') {
             $payment = $payload['payload']['payment']['entity'];
             $paymentId = $payment['id'];
@@ -1245,6 +1297,13 @@ class ApiController extends Controller
 
             // Update DB with failure status
             DB::table('payment_transactions')
+                ->where('payment_id', $paymentId)
+                ->update([
+                    'status'     => $status,
+                    'response'   => json_encode($payment),
+                    'updated_at' => now()
+                ]);
+            DB::table('t_shirt_transaction')
                 ->where('payment_id', $paymentId)
                 ->update([
                     'status'     => $status,
