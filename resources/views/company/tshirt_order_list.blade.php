@@ -178,6 +178,8 @@
                                     <tr>
                                         <th width="1%">#</th>
                                         <th class="text-nowrap">User Name</th>
+                                        <th class="text-nowrap">Email</th>
+                                        <th class="text-nowrap">Mobile</th>
                                         <th class="text-nowrap">Payment ID</th>
                                         <th class="text-nowrap">Order ID</th>
                                         <th class="text-nowrap">Method</th>

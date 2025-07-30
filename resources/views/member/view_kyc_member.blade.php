@@ -142,7 +142,7 @@
                                         <h4 class="text-center text-success">Aadhar Info</h4>
                                         <hr>
                                         <div class="aadhar-photo">
-                                            <strong>Aadhar Image:</strong> <img class="img-fluid rounded" src="{{ asset('storage/' . (optional(@$member)->aadhar_profile_photo ?: 'default-placeholder.jpg')) }}" alt="Aadhar Photo">
+                                            <strong>Aadhar Image:</strong> <img class="img-fluid rounded w-50" src="{{ asset('storage/' . (optional(@$member)->aadhar_profile_photo ?: 'default-placeholder.jpg')) }}" alt="Aadhar Photo">
                                         </div>
                                         <p><strong>Aadhar No:</strong> {{ @$member->aadhar_no }}</p>
                                         <p><strong>Father's Name:</strong> {{ @$member->aadhar_father_name }}</p>
@@ -182,35 +182,64 @@
                                         <p><strong>Status:</strong> {{ ($member->is_bank_verified == 1) ? "Verified":'Not Verified' ;}}</p>
                                     </div>
                                 </div>
+                               <div class="col-md-6">
+                                    <div class="bank-info">
+                                        <hr>
+                                        <h4 class="text-center text-info">Kyc Current Location</h4>
+                                        @php
+                                            $kycKeys = [
+                                                'normalized_city',
+                                                'category',
+                                                'type',
+                                                'continent',
+                                                'country',
+                                                'country_code',
+                                                'county',
+                                                'postcode',
+                                                'road',
+                                                'road_type',
+                                                'state',
+                                                'state_code',
+                                                'state_district',
+                                                'suburb'
+                                            ];
+                                        @endphp
+                                
+                                        @foreach ($kycKeys as $key)
+                                            <p><strong>{{ ucwords(str_replace('_', ' ', $key)) }}:</strong> {{ @$member->$key }}</p>
+                                        @endforeach
+                                    </div>
+                                </div>
+
                                 <div class="col-md-6">
                                     <div class="bank-info">
                                          <h4 class="text-center text-info">Equipment Images</h4>
                                         <hr>
                                         <h4 class="text-center text-info">Trimmer</h4>
-                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->trimer ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
+                                        <img class="img-fluid rounded w-50"src="{{ asset('storage/' . (optional(@$member)->trimer ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
                                         <h4 class="text-center text-info">Blower</h4>
-                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->blower ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
+                                        <img class="img-fluid rounded w-50"src="{{ asset('storage/' . (optional(@$member)->blower ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
                                         <h4 class="text-center text-info">Scissor</h4>
-                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->scissor ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
+                                        <img class="img-fluid rounded w-50"src="{{ asset('storage/' . (optional(@$member)->scissor ?: 'default-placeholder.jpg')) }}"alt="Equipment Image Photo" width="50%">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="bank-info">
                                         <hr>
                                         <h4 class="text-center text-info">Live Photo</h4>
-                                        <img class="img-fluid rounded"src="{{ asset('storage/' . (optional(@$member)->live_photo ?: 'default-placeholder.jpg')) }}"alt="Aadhar Photo" width="50%">
+                                        <img class="img-fluid rounded w-50"src="{{ asset('storage/' . (optional(@$member)->live_photo ?: 'default-placeholder.jpg')) }}"alt="Aadhar Photo" width="50%">
                                     </div>
                                 </div>
-                                <div class="col-md-6 mt-3">
-                                    <div class="bank-info">
-                                        <hr>
-                                        <h4 class="text-center text-info">Live Video</h4>
-                                        <video class="img-fluid rounded" controls width="100%">
-                                            <source src="{{ asset('storage/' . (optional($member)->live_video ?: 'default-placeholder.mp4')) }}" type="video/mp4" ">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    </div>
-                                </div>
+                                <!--<div class="col-md-6 mt-3">-->
+                                <!--    <div class="bank-info">-->
+                                <!--        <hr>-->
+                                <!--        <h4 class="text-center text-info">Live Video</h4>-->
+                                <!--        <video class="img-fluid rounded" controls width="100%">-->
+                                <!--            <source src="{{ asset('storage/' . (optional($member)->live_video ?: 'default-placeholder.mp4')) }}" type="video/mp4" ">-->
+                                <!--            Your browser does not support the video tag.-->
+                                <!--        </video>-->
+                                <!--    </div>-->
+                                <!--</div>-->
                             </div>
                         </div>
                     </div>

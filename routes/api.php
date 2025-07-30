@@ -36,7 +36,9 @@ Route::post('razorpay/webhook', [ApiController::class, 'handle']);
 Route::post('notification', [ApiController::class, 'sendNotificationToUser']);
 
 Route::middleware(['jwt'])->group(function () {
-       Route::post('user/create-razorpay-order', [ApiController::class, 'createOrder']);
+    Route::get('user/notification', [ApiController::class, 'getUsernotification']);
+    Route::get('user/transaction', [ApiController::class, 'getUsertransaction']);
+    Route::post('user/create-razorpay-order', [ApiController::class, 'createOrder']);
     Route::post('user/create-razorpay-payment', [ApiController::class, 'payment']);
     Route::post('user/create-tshirt-payment', [ApiController::class, 'tshirt_payment']);
     Route::post('user/get-aadhar-otp',[ApiController::class, 'get_aadhar_otp']);
@@ -79,7 +81,7 @@ Route::middleware(['jwt'])->group(function () {
     Route::post('user/send-message', [MessageController::class, 'sendMessage']);
     Route::post('user/mark-as-read', [MessageController::class, 'markAsRead']);
     Route::post('user/fetch-all-users', [MessageController::class, 'fetchUsers']);
-
+    Route::delete('user/delete-account',[ApiController::class, 'delete_user']);
 
     Route::post('user/user-create-pin', [AuthController::class, 'create_pin']);
     Route::get('user/loan-request-list', [LoanRequestController::class, 'loan_request_list']);

@@ -6,6 +6,7 @@ use App\Models\Member;
 use App\Models\Permission;
 use DB;
 use App\Models\Roles;
+use App\Models\Page;
 use Faker\Provider\ar_EG\Company;
 use Illuminate\Http\Request;
 use PDO;
@@ -140,4 +141,13 @@ class RoleController extends Controller
             return response()->json(['status' => false]);
         }
     }
+    
+    public function get_pages(Request  $request , $title )
+    {
+
+        $page = Page::where('page_name', $title)->first();
+        $title = $page->title;
+        return view('roles.policy', compact('title', 'page'));
+    }
+    
 }

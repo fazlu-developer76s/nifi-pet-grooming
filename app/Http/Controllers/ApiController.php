@@ -479,11 +479,11 @@ class ApiController extends Controller
 
 
         if (!empty($request->lat) && !empty($request->long)) {
-            $apiKey = '9d52cf15543e4b1d9517f51ba60e6961';
+           
+            $apiKey = 'e3236220140e4313b00c09c7e420d58b';
             $url = "https://api.opencagedata.com/geocode/v1/json?q={$request->lat}+{$request->long}&key={$apiKey}";
             $response = file_get_contents($url);
             $responseData = json_decode($response, true);
-
             if (!empty($responseData['results'])) {
                 $addressComponents = $responseData['results'][0]['components'];
                 $user_update->normalized_city = $addressComponents['city'] ?? null;
@@ -880,7 +880,7 @@ class ApiController extends Controller
 
                     $new_arr[] = $note;
                 }
-                $book->notification = $new_arr;
+                // $book->notification = $new_arr;
                 $get_book[] = $book;
             }
         }
@@ -945,7 +945,7 @@ class ApiController extends Controller
 
     public function accept_booking(Request $request)
     {
-
+                
         $rules = array(
             'id'       => 'required',
             'booking_status'       => 'required'
@@ -955,6 +955,12 @@ class ApiController extends Controller
             return $validate;
         }
         if ($request->user->role_id != 5) {
+            $get_user_id = DB::table('tbl_pet_bookings')->where('id',$request->id)->first();
+            if($request->booking_status != 4 ){
+                if(isset($get_user_id) && !empty($get_user_id->accept_user_id) && $get_user_id->booking_status != 2){
+                      return response()->json(['status' => 'OK', 'message' => 'This booking has been already accepted']);
+                }
+            }
             if($request->booking_status == 4){
                 $get_otp = DB::table('tbl_pet_bookings')->where('id', $request->id)->where('status', 1)->where('is_otp_verified',2)->where('otp',$request->otp)->first();
                 if (!$get_otp) {
@@ -962,9 +968,10 @@ class ApiController extends Controller
                 }
                 DB::table('tbl_pet_bookings')->where('id', $request->id)->update(['is_otp_verified' => 1]);
             }
-            DB::table('tbl_pet_bookings')
+             DB::table('tbl_pet_bookings')
                 ->where('id', $request->id)
                 ->update(['accept_user_id' => $request->user->id, 'booking_status' => $request->booking_status]);
+           
             $insert_cancel = DB::table('tbl_booking_log')->insert(['user_id' => $request->user->id, 'booking_id' => $request->id, 'type' => 2]);
             $subject = '';
             if ($request->booking_status == 2) {
@@ -976,16 +983,19 @@ class ApiController extends Controller
             if ($request->booking_status == 4) {
                 $subject = 'complete booking';
             }
-            $user = DB::table('users')->where('id', $get_otp->user_id)->first();
-            GlobalHelper::SaveNotification($request->id, $request->user->id, $request->booking_status, $get_otp->package_name, 'Booking ' . $subject);
-            $this->sendNotificationToUser($user->fcm_token,$get_otp->package_name, "Your booking has been ' . $subject . ' by ' . $user->name");
-                DB::table('tbl_notification')->insert([
-                'booking_id' => $get_otp->id,
-                'user_id' => $get_otp->user_id,
-                'type' => 5,
-                'subject' => $get_otp->package_name,
-                'description' => 'Your booking has been ' . $subject . ' by ' . $user->name,
-            ]);
+            $user = DB::table('users')->where('id', $get_user_id->customer_id)->first();
+            $accept_user = DB::table('users')->where('id',$get_user_id->accept_user_id)->first();
+            GlobalHelper::SaveNotification($request->id, $request->user->id, $request->booking_status, $get_user_id->package_name, 'Booking ' . $subject);
+            $this->sendNotificationToUser($user->fcm_token, $get_user_id->package_name, 'Your booking has been ' . $subject . ' by ' . $accept_user->name);
+              DB::table('tbl_notification')->insert([
+                    'booking_id'  => $get_user_id->id,
+                    'user_id'     => $get_user_id->customer_id,
+                    'type'        => 5,
+                    'subject'     => $get_user_id->package_name,
+                    'description' => 'Your booking has been ' . $subject . ' by ' . $accept_user->name,
+                  
+                ]);
+
         }
         return response()->json(['status' => 'OK', 'message' => 'Booking status updated successfully']);
     }
@@ -1106,7 +1116,7 @@ class ApiController extends Controller
         if ($validate != "no") {
             return $validate;
         }
-        $apiKey = '9d52cf15543e4b1d9517f51ba60e6961';
+        $apiKey = 'e3236220140e4313b00c09c7e420d58b';
         $url = "https://api.opencagedata.com/geocode/v1/json?q={$request->lat}+{$request->long}&key={$apiKey}";
         $response = file_get_contents($url);
         $responseData = json_decode($response, true);
@@ -1122,7 +1132,7 @@ class ApiController extends Controller
     {
         $user = User::findOrFail($request->user->id);
         if (!empty($request->lat) && !empty($request->long)) {
-            $apiKey = '9d52cf15543e4b1d9517f51ba60e6961';
+            $apiKey = 'e3236220140e4313b00c09c7e420d58b';
             $url = "https://api.opencagedata.com/geocode/v1/json?q={$request->lat}+{$request->long}&key={$apiKey}";
             $response = file_get_contents($url);
             $responseData = json_decode($response, true);
@@ -1338,11 +1348,15 @@ class ApiController extends Controller
         return response()->json(['status' => 'ok']);
     }
 
-    public function sendNotificationToUser($fcm_token,$title,$body)
+   public function sendNotificationToUser($fcm_token,$title,$body)
     {
+        if (!$fcm_token) {
+            return response()->json(['error' => 'FCM token is missing'], 400);
+        }
+      
+        $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/google-services.json'));
+        
 
-
-        $factory = (new Factory)->withServiceAccount(storage_path('app\firebase\google-services.json'));
 
 
         $messaging = $factory->createMessaging();
@@ -1384,8 +1398,7 @@ class ApiController extends Controller
 
     public function userOTP($mobile_no)
     {
-        $otp = 1234;
-        return $otp;
+   
         $entity_id = 1701159540601889654;
         $senderId  = "NRSOFT";
         $temp_id   = "1707164805234023036";
@@ -1421,4 +1434,41 @@ class ApiController extends Controller
         curl_close($ch);
         return $otp;
     }
+    
+    public function getUsernotification(Request $request){
+        // echo $request->user->id ; die;
+        
+        $get_notification = DB::table('tbl_notification as a')->leftJoin('tbl_pet_bookings as b','a.booking_id','=','b.id')->leftJoin('users as c','a.user_id','=','c.id')->select('a.*','b.package_name as package_name','b.pet_image as pet_image','c.name as user_name')->where('a.user_id',$request->user->id)->orderBy('a.id','desc')->get();
+    
+            return response()->json([
+                  'success' => true,
+                'message' => 'Notification fetch successfully',
+                'data' => $get_notification
+                ]);
+        
+        
+    }
+    
+    public function getUsertransaction(Request $request){
+        
+        $get_transaction = DB::table('payment_out')->where('user_id',$request->user->id)->get();
+          return response()->json([
+                  'success' => true,
+                'message' => 'Transaction fetch successfully',
+                'data' => $get_transaction
+                ]);
+        
+        
+    }
+    
+    public function delete_user(Request $request){
+       
+        $user_id = $request->user->id;
+        $delete_user = DB::table('users')->where('id',$user_id)->delete();
+        return response()->json([
+         'success' => true,
+        'message' => 'User delete successfully'
+        ]);
+    }
+    
 }

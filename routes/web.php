@@ -20,7 +20,7 @@ use App\Http\Controllers\TshirtController;
 Route::get('/', function () {
     return view('auth.login');
 });
-
+Route::get('pages/{title}',[RoleController::class, 'get_pages']);
 
 Auth::routes();
 

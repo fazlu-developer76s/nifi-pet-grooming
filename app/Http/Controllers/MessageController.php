@@ -5,6 +5,7 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use DB;
+use App\Http\Controllers\ApiController;
 
 class MessageController extends Controller
 {
@@ -39,6 +40,9 @@ class MessageController extends Controller
         $msg->sender_id = $request->sender_id;
         $msg->receiver_id = $request->receiver_id;
         $msg->message = $request->message;
+        $get_user = DB::table('users')->where('id',$request->receiver_id)->first();
+        $apicontroller = new ApiController();
+        $apicontroller->sendNotificationToUser($get_user->fcm_token,$get_user->name, $request->message);
         $msg->save();
         if($msg){
             return response()->json(['status' => 'OK', 'message' => 'Message Sent successfully']);
@@ -67,6 +71,10 @@ class MessageController extends Controller
         if($request->user->role_id == 5){
             $fetch_bookings->where('customer_id',$request->user->id);
         }
+        if ($request->title) {
+            $fetch_bookings->orWhere('name', 'LIKE', '%' . $request->title . '%');
+        }
+
         $fetch_booking = $fetch_bookings->get();
         $accept_ids = '';
         $customer_ids = '';

@@ -224,7 +224,16 @@
                                         <td>{{ ucwords($book->package_name) }}</td>
                                         <td>{{ ucwords($book->package_type) }}</td>
                                         <td>{{ \Carbon\Carbon::parse(@$book->booking_date)->format('d F Y') ?? 'N/A' }}
-                                        <td>{{ \Carbon\Carbon::parse(@$book->booking_time)->format('h:i A') ?? 'N/A' }}
+                                           @php
+                                            $timeRange = explode(' - ', @$book->booking_time);
+                                            $from = isset($timeRange[0]) ? \Carbon\Carbon::parse($timeRange[0]) : null;
+                                            $to = isset($timeRange[1]) ? \Carbon\Carbon::parse($timeRange[1]) : null;
+                                        @endphp
+                                        
+                                        <td>
+                                            {{ $from && $to ? $from->format('h:i A') . ' - ' . $to->format('h:i A') : 'N/A' }}
+                                        </td>
+
 
                                         <td>{{ $book->booking_amount }}</td>
                                         <td>{{ $book->tax_amount }}</td>

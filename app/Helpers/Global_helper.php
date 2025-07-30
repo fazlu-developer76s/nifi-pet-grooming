@@ -265,7 +265,7 @@ class Global_helper
       return  DB::table('dynamic_url')->where('status',1)->get();
     }
 
-    public static function SaveNotification($package_id,$user_id,$type,$subject='',$description='',){
+    public static function SaveNotification($package_id,$user_id,$type,$subject='',$description=''){
         $insert_notification = DB::table('tbl_notification')->insert([
             'booking_id' => $package_id,
             'user_id' => $user_id,
@@ -282,6 +282,30 @@ class Global_helper
     {
         return Company::where('status',1)->first();
     }
+    
+
+    public static function DashboardReport($type)
+    {
+        return DB::table('tbl_pet_bookings')
+            ->where('booking_status', $type)
+            ->count();
+    }
+    
+      public static function totalCount()
+    {
+        return DB::table('tbl_pet_bookings')->count();
+    }
+    
+      public static function totalPackageCount()
+    {
+        return DB::table('packages')->where('status',1)->count();
+    }
+    
+       public static function totalPet()
+    {
+        return DB::table('pet_category')->where('status',1)->count();
+    }
+
 
 
 

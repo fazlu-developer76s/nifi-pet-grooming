@@ -125,8 +125,17 @@
                                         </tr>
                                         <tr>
                                             <td><strong>Booking Time:</strong></td>
-                                            <td>{{ \Carbon\Carbon::parse(@$get_booking->booking_time)->format('h:i A') ?? 'N/A' }}
+                                            @php
+                                                $timeRange = explode(' - ', @$book->booking_time);
+                                                $from = isset($timeRange[0]) ? \Carbon\Carbon::parse($timeRange[0]) : null;
+                                                $to = isset($timeRange[1]) ? \Carbon\Carbon::parse($timeRange[1]) : null;
+                                            @endphp
+                                            
+                                            <td>
+                                                {{ $from && $to ? $from->format('h:i A') . ' - ' . $to->format('h:i A') : 'N/A' }}
+                                            </td>
                                         </tr>
+                                        
                                         <tr>
                                             <td><strong>Booking Date:</strong></td>
                                             <td>{{ \Carbon\Carbon::parse($get_booking->created_at)->format('d F Y h:i A') }}
@@ -174,7 +183,7 @@
                                             <td>
 
                                                 @if (!empty($get_booking->post_user_image))
-                                                       <img src="{{ asset('storage/' . $get_booking->post_user_image) }}"
+                                                       <img src="{{ asset('/' . $get_booking->post_user_image) }}"
                                                            alt="Pet Image" width="100">
                                                    @else
                                                        N/A
@@ -198,7 +207,7 @@
                                             <td>
 
                                                 @if (!empty($get_booking->accept_user_image))
-                                                       <img src="{{ asset('storage/' . $get_booking->accept_user_image) }}"
+                                                       <img src="{{ asset('/' . $get_booking->accept_user_image) }}"
                                                            alt="Pet Image" width="100">
                                                    @else
                                                        N/A

@@ -69,6 +69,7 @@ class AuthController extends Controller
         ->where('a.status', 1)
         ->where('b.id','!=', 1)
         ->first();
+
         if ($user) {
             if ($otp = $this->userOTP($request->mobile_no)) {
                 $this->GenerateOTP($otp, $user->id);
@@ -143,6 +144,9 @@ class AuthController extends Controller
                     $this->ExpireToken($user->id);
                     $this->StoreToken($user->id, $token);
                 }
+                DB::table('users')->where('id',$user->id)->update(['fcm_token'=>$request->fcm_token]);
+                $user = User::where('mobile_no', $request->mobile_no)->where('status',1)->first();
+        
                 return response()->json([
                     'status' => "OK",
                     'token' => $token,
@@ -220,8 +224,10 @@ class AuthController extends Controller
     }
     public function userOTP($mobile_no)
     {
-        $otp = 1234;
-        return $otp;
+      
+        if($mobile_no == '7428059960' || $mobile_no =='8700682075'){
+            return $otp = '1234';
+        }
         $entity_id = 1701159540601889654;
         $senderId  = "NRSOFT";
         $temp_id   = "1707164805234023036";

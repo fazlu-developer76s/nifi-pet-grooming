@@ -7,20 +7,7 @@
     </div>
     <div class="navbar-nav">
         <!-- Dropdown Button -->
-        <div class="dropdown" onmouseover="showDropdown();">
-            <a class="btn btn-outline-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-plus"></i> Action <i class="fa fa-arrow-down" aria-hidden="true"></i>
-            </a>
-            <ul class="dropdown-menu show_dropdown" aria-labelledby="dropdownMenuLink">
-                @foreach (App\Helpers\Global_helper::getDynamicUrl() as $url)
-                    @if($url->url != "javascript:void(0);")
-                        <li><a class="dropdown-item" href="{{ route($url->url) }}">{{ $url->name }}</a></li>
-                    @else
-                    <li><a class="dropdown-item" href="{{ $url->url }}" data-bs-toggle="modal" data-bs-target="#exampleModal" >{{ $url->name }}</a></li>
-                    @endif
-                @endforeach
-            </ul>
-        </div>
+       
 
 
         {{-- <a href="{{ route('lead.create') }}"><button class="btn btn-primary">Add Lead</button></a> --}}

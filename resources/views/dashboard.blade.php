@@ -1,5 +1,6 @@
 @extends('layouts/app')
 @section('content')
+@inject('helper', 'App\Helpers\Global_helper')
 <div class="app-sidebar-bg"></div>
 <div class="app-sidebar-mobile-backdrop"><a href="#" data-dismiss="app-sidebar-mobile"
         class="stretched-link"></a></div>
@@ -19,14 +20,14 @@
     </div>
     <div class="row">
         <div class="col-lg-3">
-            <a href="hello">
+            <a href="#">
                 <div class="card">
                     <div class="card-body no-padding" style="height:208px">
                         <div class="alert alert-callout alert-info no-margin">
-                            <strong class="text-xl" style="font-size: 50px;">1
+                            <strong class="text-xl" style="font-size: 50px;">{{ $helper->totalCount(); }}
                                 <?php //$reqdata['COUNT(id)'];
                                 ?></strong><br>
-                            <span class="opacity-90">Request List</span>
+                            <span class="opacity-90">Total Booking</span>
                             <!-- <h1 class="pull-right text-info" style="margin-top: -20px;"><img src="assets/img/icon.png" width="100px"></h1> -->
                         </div>
                     </div>
@@ -36,78 +37,78 @@
         <div class="col-lg-9">
             <div class="row">
                 <div class="col-lg-4">
-                    <a href="hello">
+                    <a href="#">
                         <div class="card">
                             <div class="card-body no-padding">
                                 <div class="alert alert-callout alert-danger no-margin">
                                     <!-- <h1 class="pull-right text-danger"><img src="assets/img/icon.png" width="50px;"></h1> -->
-                                    <strong class="text-xl">42.90%</strong><br />
-                                    <span class="opacity-50">Bounce rate</span>
+                                    <strong class="text-xl">{{ $helper->DashboardReport(1); }}</strong><br />
+                                    <span class="opacity-50">Open Booking</span>
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
                 <div class="col-lg-4">
-                    <a href="hello">
+                    <a href="#">
                         <div class="card">
                             <div class="card-body no-padding">
                                 <div class="alert alert-callout alert-warning no-margin">
                                     <!-- <h1 class="pull-right text-warning"><img src="assets/img/icon.png" width="50px;"></h1> -->
-                                    <strong class="text-xl">$ 32,829</strong><br />
-                                    <span class="opacity-50">Revenue</span>
+                                    <strong class="text-xl">{{ $helper->DashboardReport(2); }}</strong><br />
+                                    <span class="opacity-50">Accept Booking</span>
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
                 <div class="col-lg-4">
-                    <a href="hello">
+                    <a href="#">
                         <div class="card">
                             <div class="card-body no-padding">
                                 <div class="alert alert-callout alert-success no-margin">
                                     <!-- <h1 class="pull-right text-success"><img src="assets/img/icon.png" width="50px;"></h1> -->
-                                    <strong class="text-xl">42.90%</strong><br />
-                                    <span class="opacity-50">Bounce rate</span>
+                                    <strong class="text-xl">{{ $helper->DashboardReport(3); }}</strong><br />
+                                    <span class="opacity-50">Cancel Booking</span>
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
                 <div class="col-lg-4">
-                    <a href="hello">
+                    <a href="#">
                         <div class="card">
                             <div class="card-body no-padding">
                                 <div class="alert alert-callout alert-danger no-margin">
                                     <!-- <h1 class="pull-right text-danger"><img src="assets/img/icon.png" width="50px;"></h1> -->
-                                    <strong class="text-xl">54 sec.</strong><br />
-                                    <span class="opacity-50">Avg. time on site</span>
+                                    <strong class="text-xl">{{ $helper->DashboardReport(4); }}</strong><br />
+                                    <span class="opacity-50">Complete Booking</span>
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
                 <div class="col-lg-4">
-                    <a href="hello">
+                    <a href="#">
                         <div class="card">
                             <div class="card-body no-padding">
                                 <div class="alert alert-callout alert-warning no-margin">
                                     <!-- <h1 class="pull-right text-warning"><img src="assets/img/icon.png" width="50px;"></h1> -->
-                                    <strong class="text-xl">$ 32,829</strong><br />
-                                    <span class="opacity-50">Revenue</span>
+                                    <strong class="text-xl">{{ $helper->totalPackageCount(); }}</strong><br />
+                                    <span class="opacity-50">Packages</span>
                                 </div>
                             </div>
                         </div>
                     </a>
                 </div>
                 <div class="col-lg-4">
-                    <a href="hello">
+                    <a href="#">
                         <div class="card">
                             <div class="card-body no-padding">
                                 <div class="alert alert-callout alert-success no-margin">
                                     <!-- <h1 class="pull-right text-success"><img src="assets/img/icon.png" width="50px;"></h1> -->
-                                    <strong class="text-xl">42.90%</strong><br />
-                                    <span class="opacity-50">Bounce rate</span>
+                                    <strong class="text-xl">{{ $helper->totalPet(); }}</strong><br />
+                                    <span class="opacity-50">Pet Category</span>
                                 </div>
                             </div>
                         </div>
